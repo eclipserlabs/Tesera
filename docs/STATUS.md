@@ -131,3 +131,14 @@ Human next: run the checklist, publish manually, report versions.
   both `tesera verify --checkpoint` (3 events intact) and the Node
   verifier (3 events verified).
 * Human next: commit 3 handoff docs, then manual publish.
+
+## Closeout commit 3 — handoff PASSED 2026-09-26
+
+PUBLISHING.md: MFA-confirm-first ordering, exact PyPI publishing URL,
+sheringfords org (was eclipserlabs), twine-check step, After-publish
+section (TP setup, no-tag-push rule with rationale, report-back line).
+PRE_PUBLISH_HUMAN_TASKS.md verified complete (6 security + 3 publish
+items, sheringfords paths). `twine check` passes on a fresh build.
+No npm re-pack needed (ts/ untouched since commit 4's verified pack).
+Human next: run PRE_PUBLISH_HUMAN_TASKS.md, publish, report versions.
+Commit 4 (post-publish verification) waits on that report — stopping here.

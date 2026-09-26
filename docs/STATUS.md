@@ -142,3 +142,53 @@ items, sheringfords paths). `twine check` passes on a fresh build.
 No npm re-pack needed (ts/ untouched since commit 4's verified pack).
 Human next: run PRE_PUBLISH_HUMAN_TASKS.md, publish, report versions.
 Commit 4 (post-publish verification) waits on that report — stopping here.
+
+## Test-before-publish prep PASSED 2026-09-26
+
+* PR #26 metadata (PF1-PF5): remote is `sheringfords/tesera`
+  (verified: `github.com/eclipserlabs/tesera` redirects to
+  `sheringfords/tesera`); fixed live `eclipserlabs` → `sheringfords`
+  in `pyproject.toml` (4 URLs), `ts/package.json` (repo URL,
+  +`homepage`/`bugs`), root + TS README badges, 6
+  `deploy/systemd` doc URLs. Historical rename notes in
+  `STATUS.md`/`SECURITY_AUDIT.md` left intact. Spec discrepancy:
+  the task's PF1 acceptance line ("zero `sheringfords`") is inverted
+  vs evidence — trusted the remote + redirect, fixed toward
+  `sheringfords`. `twine check` PASSED zero warnings; `npm pack
+  --dry-run` 32 intended files, no warnings.
+* PR #27 `docs/PUBLISHING.md`: 8 steps (prereqs with TestPyPI
+  account/MFA/token; build once + SHA; TestPyPI upload; fresh-venv
+  install with `--extra-index-url` reason stated; README example +
+  verify; npm dry-run + pack; tarball install + TS example; cleanup;
+  real publish with SHA comparison). All copy-pasteable, no
+  placeholders. One correction during local run: single guarded call
+  verifies as 2 events, not 3 — doc records 2.
+* PR #28 `docs/LOCAL_PRE_PUBLISH_VERIFICATION.md`: 3 builds, identical
+  SHAs (wheel
+  `f9f66576228b9c15b5629ac2b18dd2cded04a66df0a456b1098c1d4c1866ecd1`,
+  sdist
+  `1bbbb5d54f605bca8ab72da29cad8f00b0ff14ccab1b7f14b4bded3a240e843d`).
+  Wheel install → README prints `{'id': 're_123',
+  'amount_cents': 1999}`, `tesera verify` OK 2 events. Tarball
+  (`efe351359f2e453e30ff2ea4b52bf81994b2f8456b6ea4f0b544a0077ad0481b`,
+  32 files) → TS example prints `{ id: 're_123', orderId:
+  'order-1', amountCents: 1999 }`, packaged verifier OK 2 events.
+  Cross-verify both directions PASS (Node accepts Python journal,
+  Python accepts TS journal). Env quirk noted: pnpm via corepack
+  crashes in `/tmp` worktrees (not a source defect); authoritative
+  TS build from clean working checkout.
+* PR #29 handoff: `docs/TEST_PUBLISH_SEQUENCE.md` (registry-prefixed,
+  copy-pasteable, expected outputs, per-step failure notes,
+  ready-for-publish checklist) + `PRE_PUBLISH_HUMAN_TASKS.md`
+  TestPyPI prerequisites + test-first ordering.
+* Untouched: `.github/workflows/`, evidence format, wire protocol,
+  crypto, git history. No dependencies added. Nothing uploaded or
+  published.
+* Human next (under 20 min): create TestPyPI account + MFA +
+  account-scoped token → run `docs/TEST_PUBLISH_SEQUENCE.md` Steps
+  1-7 → report SHAs + checklist. If defect, report output verbatim
+  and wait. If clean, Step 8 real publish (`twine upload`,
+  `npm publish --access public`), then report "Published. Python
+  \<v\>, TypeScript \<v\>." Agent then runs post-publish
+  verification. Agent cannot: TestPyPI/PyPI/npm authentication,
+  Trusted Publishing clicks, token creation.

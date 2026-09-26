@@ -39,3 +39,48 @@ unique 20+ char passwords in a manager, and Trusted Publishing pointed
 at this repo + the two workflow filenames. The human has NOT yet
 confirmed these — publication remains blocked on that confirmation
 regardless of audit progress.
+
+## Phase 2 — Code and cryptographic review — PASS 2026-09-26
+
+Scope: primitives, randomness, comparisons, key handling, input
+validation, redaction path, crypto dependency versions. No refactors;
+one minimal fix. Human review of medium+ findings: none above low.
+
+### Findings
+
+| # | Severity | Location | Finding | Disposition |
+|---|---|---|---|---|
+| 1 | low | `ts/src/Lock.ts:145` | Lock owner token mixed `Math.random()` into pid+time. File is 0600 and same-uid attackers have easier paths (direct journal rewrite), so impact is hygiene-level. | Fixed: token is now `` `${process.pid}:${randomUUID()}` `` (CSPRNG). `===` comparison kept deliberately with an in-code reason (token is stored in the lockfile; not a secret from observers). TS suite still 56/56. |
+| 2 | low | journal readers (`src/tesera/verification.py`, `journal.py`) | No per-line length cap: a multi-GB single line in a local journal could exhaust memory. Journal files are operator-owned local files (self-DoS only, no remote vector). | Accepted risk: documented here. A remote journal is never parsed (ingestion is a separate, private service). |
+| 3 | info | `src/tesera/identity.py` | Private key material is not zeroized after use. The `cryptography` library owns the memory; neither Python nor the API exposes wiping. | Accepted risk: standard for the ecosystem; keys live 0600 on disk regardless. |
+
+### Confirmations (all pass)
+
+* Primitives: Ed25519 sign/verify and SHA-256 go exclusively through
+  `cryptography` (Python: `identity.py:34,309`, `verification.py:34`) and
+  Node `crypto` (`generateKeyPairSync("ed25519")`, `timingSafeEqual` in
+  `Witness.ts:41`). Nothing hand-rolled. 64-byte sig / 32-byte key
+  enforced by the libraries; `verify_signature` maps `InvalidSignature`
+  to `False` (`identity.py:302-310`).
+* Randomness: `secrets.token_urlsafe` (approval/decision tokens),
+  `uuid4` (event ids), `randomUUID` (TS event ids, witness tokens, lock
+  tokens after fix). No `random` module, no `Math.random` remains
+  (verified by grep).
+* Comparisons: bearer/decision tokens via `secrets.compare_digest`
+  (`approve_server.py:147,176,222`); witness checkpoint via
+  `timingSafeEqual` (`Witness.ts:41`); signatures verified by the
+  libraries (constant-time internally). No `==` on secrets remains.
+* Key management: keys generated via lib CSPRNG, stored 0600
+  (`_write_restricted`, `identity.py:528`), never logged/printed
+  (CLI prints audit payloads only — no key material), rotation keeps old
+  events verifiable (`trusted_keys/` + in-chain `rotation` events).
+* Input validation: no `eval`/`exec`/`os.system`/`subprocess`/`pickle`/
+  shell anywhere in `src/`; malformed journals yield typed errors
+  (`malformed_json`, `malformed_event`); CLI bounds (`--limit`,
+  `--max-events`, 1000-char notes).
+* Redaction: fused redact+canonicalize traversal (`canonical.py:1-26`
+  design note); `engine.py:530` hashes the canonicalized (redacted)
+  arguments; value patterns + homoglyph folding covered by property tests.
+* Deps: `cryptography` installed 50.0.1 (`>=42.0` floor in
+  `pyproject.toml`); TS crypto is Node builtins (no third-party crypto
+  dep). CVE status checked in phase 3.

@@ -99,3 +99,10 @@
 * Added: TS cross-link, table of contents with verified anchors, fixed
   stale `tessera-cloud` reference.
 * Code blocks untouched (still the executed ones from commit 3).
+
+## Security audit phase 1 — PASS 2026-09-26
+
+zizmor clean (0 findings, was 21 unpinned + 8 artipacked + 7 permissions + 2 cache). All actions SHA-pinned, least-privilege permissions, no caches in release jobs. Report: docs/SECURITY_AUDIT.md.
+Note: org renamed eclipserlabs → sheringfords (remote updated locally).
+Stale eclipserlabs URLs remain in pyproject/README/package.json — queued for the docs phase (redirects still resolve; not a security finding).
+Human next: MFA + Trusted Publishing confirmation (blocks publish).

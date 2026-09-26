@@ -14,6 +14,7 @@
  */
 import * as fs from "node:fs";
 import * as os from "node:os";
+import { randomUUID } from "node:crypto";
 import { Data, Effect } from "effect";
 
 export class LockError extends Data.TaggedError("LockError")<{
@@ -139,10 +140,13 @@ export const withJournalLock = <A, E>(
           }),
       );
     }
-    // Unique ownership token: release unlinks only while the file still
-    // carries OUR token, so we can never delete a successor's lock
-    // (the steal-and-delete that naive unlock-unconditionally has).
-    const ownerToken = `${process.pid}:${Date.now().toString(36)}:${Math.floor(Math.random() * 2 ** 32).toString(36)}`;
+    // Unique ownership token from a CSPRNG: release unlinks only while
+    // the file still carries OUR token, so we can never delete a
+    // successor's lock (the steal-and-delete that naive
+    // unlock-unconditionally has). (`===` is correct here, not
+    // timingSafeEqual: the token is stored in the lockfile itself, so it
+    // is not a secret from anyone who can observe the comparison.)
+    const ownerToken = `${process.pid}:${randomUUID()}`;
     const acquire: Effect.Effect<{ lockfile: string; fd: number }, LockError> = Effect.gen(
       function* () {
         for (;;) {

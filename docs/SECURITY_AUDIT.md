@@ -175,3 +175,19 @@ No claim removed, none corrected — the model matches the code.
   action — stated; (c) no tail-detection claim — detection never claimed.
 * Pitch: "gates consequential function calls on approval and records
   signed evidence of each call" — no overclaim (denials record too).
+
+## Phase 6 — Post-publication monitoring — PASS 2026-09-26
+
+* `.github/dependabot.yml`: weekly Monday, `pip` + `npm` (`/ts`) +
+  `github-actions`, minor/patch grouped, prefixed commit messages.
+* `.github/workflows/dependency-scan.yml`: weekly cron + manual
+  dispatch; `uv run --with pip-audit` and `pnpm audit
+  --audit-level=high`; opens one issue with both outputs on any
+  high/critical hit. New actions SHA-pinned; zizmor still 0 findings
+  across all workflows.
+* `docs/RELEASE_CHECKLIST.md`: tests, vectors, scans, changelog,
+  version/tag match, README re-run, audit status, provenance, fresh
+  install verification.
+* `SECURITY.md`: incident-response section added (triage against the
+  threat model, patch release + advisory + credit, upgrade guidance,
+  documented limits closed with a pointer).

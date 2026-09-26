@@ -1,0 +1,37 @@
+name: Publish TypeScript (npm)
+
+# First publish is MANUAL (see docs/PUBLISHING.md): the account owner runs
+# `npm publish --access public` once from ts/ in a terminal. Afterwards,
+# pushing a `ts@*` tag publishes via npm Trusted Publishing (OIDC +
+# --provenance, no stored token).
+on:
+  push:
+    tags:
+      - "ts@*"
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ts
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+          cache: pnpm
+          cache-dependency-path: ts/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - run: pnpm test
+      - run: pnpm build
+      - run: npm publish --provenance --access public

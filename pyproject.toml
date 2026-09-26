@@ -8,6 +8,7 @@ version = "0.2.0"
 description = "Approval-gated, tamper-evident evidence for consequential Python function calls."
 readme = "README.md"
 license = { file = "LICENSE" }
+authors = [{ name = "Wira Mahendra", email = "wiramahendra@proton.me" }]
 requires-python = ">=3.10"
 dependencies = [
     "cryptography>=42.0",

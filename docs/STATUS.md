@@ -62,3 +62,30 @@
   `verifiers/node/verify.mjs` inside the published tarball — the `files`
   allowlist must include it (or the command must change).
 * Human next: commit 4 (workflows, packaging, PUBLISHING.md). No publish yet.
+
+## Commit 4 — publication prep PASSED 2026-09-26
+
+* Files: `pyproject.toml` (+authors), `.github/workflows/publish-{python,npm}.yml`
+  (tag-triggered `py@*`/`ts@*`, OIDC Trusted Publishing, no stored tokens),
+  `ts/package.json` (name `tesera`, repository, `publishConfig.public`,
+  `files` allowlist, `exports` fix, `prepack` staging of LICENSE +
+  verifier), `ts/README.md` (verify path matches packaged layout),
+  `.gitignore` (prepack outputs), `docs/PUBLISHING.md` (exact manual steps).
+* Validation: workflows YAML-parsed + structure-asserted (no `act`
+  available); `uv build` → wheel+sdist, `twine check` PASSED; wheel
+  metadata (name/version/author/MIT/`>=3.10`) verified; fresh wheel
+  install works (`tesera 0.2.0` + CLI). `pnpm pack` → 32 files, no
+  tests/scripts/maps/raw-ts leaks; fresh tarball install runs the README
+  example and the packaged verifier path end-to-end.
+* Deviations: tags `py@0.2.0`/`ts@0.2.0` (not `0.1.0`): the tree IS 0.2.0,
+  tagging it 0.1.0 would mislabel the code. Human may still choose 0.1.0
+  at publish time by bumping the version fields first (one line each).
+* Findings fixed here: TS `exports` pointed at a nonexistent
+  `./dist/index.js` (tsc emits `./dist/src/index.js`) — `import "tesera"`
+  would have failed on install day.
+* Env note: after the folder rename (`tessera` → `tesera`), the dev
+  `.venv` editable hook broke (`ModuleNotFoundError`); `uv sync` fixed
+  it. If your shell shows the same, re-run `uv sync`.
+* Suites: 428 Python + 56 TS pass. Human next: commit 5 manual publish
+  (`twine upload`, `npm publish --access public`, Trusted Publishing
+  setup), then report versions back.

@@ -18,8 +18,9 @@ Report it privately instead:
 
 - If you have write access to the repository, use GitHub's private security
   advisory flow.
-- Otherwise, email the maintainers via the contact address listed on the
-  project page, and include "tesera" in the subject line.
+- Otherwise, email wiramahendra@proton.me with "tesera" in the subject
+  line. This is a personal address on a single-engineer project:
+  best-effort maintenance, 48-hour acknowledgment still holds.
 
 Please include:
 

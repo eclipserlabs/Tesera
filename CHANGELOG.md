@@ -1,11 +1,17 @@
 # Changelog
 
-All notable changes to `interceptor` are recorded here. The format follows
+All notable changes to `tesera` are recorded here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning follows
 [`docs/API_STABILITY.md`](docs/API_STABILITY.md) (SemVer once 1.0 ships,
 pre-1.0 additive-only discipline until then).
 
 ## [Unreleased]
+
+### First public release
+
+0.1.x was internal-only and never published to any index. 0.2.0 is the
+first public release: if you see 0.2.0 on PyPI, nothing is missing —
+there is no public 0.1.x to upgrade from.
 
 ### Renamed
 

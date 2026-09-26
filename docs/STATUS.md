@@ -106,3 +106,13 @@ zizmor clean (0 findings, was 21 unpinned + 8 artipacked + 7 permissions + 2 cac
 Note: org renamed eclipserlabs → sheringfords (remote updated locally).
 Stale eclipserlabs URLs remain in pyproject/README/package.json — queued for the docs phase (redirects still resolve; not a security finding).
 Human next: MFA + Trusted Publishing confirmation (blocks publish).
+
+## Closeout commit 1 — eight items PASSED 2026-09-26
+
+C1 zizmor online 0 findings. C2 pip-audit==2.10.1 pinned. C3 advisories
++ secret scanning recorded as human tasks (API state unconfirmable).
+C4 real email + best-effort note. C5 two attestation steps added. C6
+one-sentence disambiguation. C7 first-public note + header fix. C8 no
+private links; remaining links resolve.
+New: docs/PRE_PUBLISH_HUMAN_TASKS.md (20-minute checklist).
+Human next: run the checklist, publish manually, report versions.

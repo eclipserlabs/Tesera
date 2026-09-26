@@ -7,6 +7,8 @@
 
 Tesera is a Python library that gates consequential function calls on approval and records signed evidence of each call.
 
+The package is `tesera` (single 's'), not to be confused with `tessera` (double 's'), an unrelated Graphite dashboard on PyPI.
+
 ## The problem this solves
 
 A refund function runs, the network times out, and the process exits

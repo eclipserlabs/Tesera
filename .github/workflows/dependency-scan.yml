@@ -37,7 +37,7 @@ jobs:
         id: pip
         run: |
           uv sync --frozen
-          uv run --frozen --with pip-audit pip-audit --strict > pip-audit.txt 2>&1 || echo "pip_failed=true" >> "$GITHUB_OUTPUT"
+          uv run --frozen --with pip-audit==2.10.1 pip-audit --strict > pip-audit.txt 2>&1 || echo "pip_failed=true" >> "$GITHUB_OUTPUT"
           cat pip-audit.txt
       - name: TypeScript audit
         id: npm

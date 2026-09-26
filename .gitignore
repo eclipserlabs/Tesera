@@ -12,3 +12,5 @@ dist/
 .DS_Store
 node_modules/
 ts/dist/
+ts/verifiers/
+ts/LICENSE

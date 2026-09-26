@@ -55,7 +55,7 @@ cannot reach.
 ## Verify evidence offline
 
 ```sh
-node ./node_modules/tesera/verifiers/node/verify.mjs --journal ./journal.jsonl --public-key ./tesera.pub.pem
+node ./node_modules/tesera/verifiers/verify.mjs --journal ./journal.jsonl --public-key ./tesera.pub.pem
 ```
 
 Output:

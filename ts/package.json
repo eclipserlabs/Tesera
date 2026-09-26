@@ -8,14 +8,24 @@
     "type": "git",
     "url": "https://github.com/eclipserlabs/tesera"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist/src/**/*.js",
+    "dist/src/**/*.d.ts",
+    "verifiers/verify.mjs",
+    "README.md"
+  ],
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/src/index.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "check": "tsc --noEmit",
     "test": "vitest run",
-    "vectors": "vitest run test/vectors.test.ts"
+    "vectors": "vitest run test/vectors.test.ts",
+    "prepack": "mkdir -p verifiers && cp ../verifiers/node/verify.mjs verifiers/verify.mjs && cp ../LICENSE LICENSE"
   },
   "dependencies": {
     "effect": "^3.22.1"

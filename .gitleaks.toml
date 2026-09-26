@@ -1,0 +1,17 @@
+# Gitleaks allowlist for known-benign fixtures (security audit phase 3).
+# Each entry is a synthetic test secret that exists to exercise the
+# redactor, or a code identifier the generic rule misfires on.
+# Human-approved 2026-09-26. Real credentials must NEVER be added here.
+[allowlist]
+description = "synthetic redaction-test fixtures, not credentials"
+paths = [
+  '''tests/test_redaction_homoglyphs\.py''',
+  '''tests/test_redaction_property\.py''',
+  '''tests/test_maturity\.py''',
+]
+regexes = [
+  '''msk-live-HOMOGLYPH-TEST-[A-Z0-9]+''',
+  '''msk-live-PROPERTY-TEST-SECRET-[a-z0-9]+''',
+  '''sk-live-abcdefgh12345678''',
+  '''mEd25519PrivateKey''',
+]

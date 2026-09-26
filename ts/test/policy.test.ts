@@ -231,7 +231,7 @@ describe("AttestedApprovalProvider", () => {
     expect(denied.decision).toBe("denied");
     expect(denied.approvedBy).toBeUndefined();
     const missing = await Effect.runPromise(
-      new AttestedApprovalProvider(allowInner, undefined, "INTERCEPTOR_DEFINITELY_UNSET").decide(req),
+      new AttestedApprovalProvider(allowInner, undefined, "TESERA_DEFINITELY_UNSET").decide(req),
     );
     expect(missing.decision).toBe("denied");
   });

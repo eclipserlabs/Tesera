@@ -24,3 +24,20 @@
   evidence format, wire protocol, all logic.
 * Human next: nothing until commits 2–4 are done; publication (commit 5)
   remains a manual human step.
+
+## Commit 2 — TypeScript rename PASSED 2026-09-26
+
+* Renamed: `ts/package.json` name `interceptor-effect` → `tesera` (+
+  description, + repository `eclipserlabs/tesera`),
+  `INTERCEPTOR_APPROVER` → `TESERA_APPROVER` (src + test unset-marker),
+  matching Python's `TESERA_*` prefix. No logic changes; no import
+  rewrites needed (relative imports throughout).
+* Proof of clean: `grep -rni interceptor ts/src ts/test ts/scripts
+  ts/package.json ts/tsconfig.json` empty. pnpm-lock untouched (no name
+  reference). `ts/README.md` deferred to commit 3.
+* Tests: 56 passed before → 56 passed after (`pnpm install` frozen,
+  `pnpm check` clean, `pnpm test` 9 files). `pnpm build` emits package
+  `tesera`. Cross-language: Python vectors verify in TS (suite) and
+  TS-emitted journals verify in Python (`test_ts_interop` + vectors, 19
+  passed on rebuilt dist).
+* Human next: commit 3 (READMEs), then commit 4 (publication prep).

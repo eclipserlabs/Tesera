@@ -590,14 +590,14 @@ export class WitnessFreshnessProvider {
 
 /**
  * Stamp inner allowances with an operator identity (explicit or from
- * `INTERCEPTOR_APPROVER`, e.g. an OIDC `sub` the launcher exports). Denials
+ * `TESERA_APPROVER`, e.g. an OIDC `sub` the launcher exports). Denials
  * pass through; missing or malformed identity fails closed.
  */
 export class AttestedApprovalProvider {
   constructor(
     private readonly inner: Decide,
     private readonly approvedBy?: string,
-    private readonly approvedByEnv = "INTERCEPTOR_APPROVER",
+    private readonly approvedByEnv = "TESERA_APPROVER",
   ) {}
 
   decide(request: ApprovalRequest): Effect.Effect<ApprovalDecision, never> {

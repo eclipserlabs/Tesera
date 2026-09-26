@@ -1,45 +1,110 @@
-# interceptor-effect
+# Tesera (TypeScript)
 
-Approval-gated, tamper-evident evidence for consequential function calls —
-the Effect/TypeScript sibling of the Python `interceptor` package. Same
-evidence format v1, same guarantees, enforced where TypeScript agents run.
+Signed, hash-chained evidence for consequential function calls — the
+Effect/TypeScript sibling of the Python `tesera` package. Same evidence
+format v1, same guarantees, enforced where TypeScript agents run.
+
+## Install
 
 ```sh
-pnpm install
-pnpm check    # tsc --noEmit
-pnpm test     # vitest (includes cross-language vector conformance)
+npm install tesera
 ```
 
-## What is implemented
+Requires Node 20+.
 
-- `Canonical` — byte-exact canonical JSON (sorted keys, compact separators,
-  Python float repr rules) plus a lexical-number-preserving parse, so `2` and
-  `2.0` hash exactly as written.
-- `Identity` — Ed25519 over Node builtins, same digest-sign-keyId scheme.
-- `Journal` — append-only JSONL with tail-read chain tip and fsync durability.
-- `Schemas` — Effect Schema codecs for every event type.
-- `Verify` — offline verification (shape, hash, signature, chain, checkpoint /
-  countersignature / rotation / archive semantics) as pure Effect.
-- `Guard` — approval gate recording signed decision/outcome evidence with
-  typed errors (`ApprovalError` / `ActionDenied` / `JournalError`); denial
-  never executes, exactly like the Python engine.
+## 30-second example
 
-## Conformance
+```ts
+import { writeFileSync } from "node:fs";
+import { Effect } from "effect";
+import { Guard, Identity, Journal, Policy } from "tesera";
 
-`test/vectors.test.ts` checks the committed Python-produced journals in
-`verifiers/vectors/v1/` — validity, event counts, and failure codes must match
-across implementations. Divergences fail here, not in audits.
+const program = Effect.gen(function* () {
+  const journal = Journal.makeFileJournal("./journal.jsonl");
+  const identity = yield* Identity.generateIdentity();
+  writeFileSync("./tesera.pub.pem", identity.publicKeyPem);
+  const budget = yield* Policy.BudgetProvider.make(1000, false);
 
-## Deliberate gaps (next)
+  const refund = Guard.guard({
+    action: "billing.refund",
+    journal,
+    approve: (request) => budget.decide(request),
+    identity,
+  })((orderId: string, amountCents: number) => ({ id: "re_123", orderId, amountCents }));
 
-- Redaction covers folded names, custom names, and value patterns (parity
-  tested against Python's folder); exotic Unicode beyond the ported lookalike
-  table stays best-effort on both sides.
-- Cross-process appends serialize through an `O_EXCL` sidecar lock file with
-  pid-liveness stale recovery; the guard layer additionally holds a
-  per-journal semaphore around its check-then-append reservation.
-- Policy surface is budget (memory + durable file-backed), spending,
-  rate-limit, quorum, attested-identity, and declarative JSON rules.
-- No hosted witness: `Witness` runs wherever you run it; pair with TLS, real
-  auth, and off-host storage in production.
-- `parameterNames` must be supplied for positional secrets to redact by name.
+  return yield* refund("order-1", 1999);
+});
+
+Effect.runPromise(program).then(
+  (result) => console.log(result),
+  (error) => { console.error(String(error)); process.exit(1); },
+);
+```
+
+Output:
+
+```
+{ id: 're_123', orderId: 'order-1', amountCents: 1999 }
+```
+
+Each call writes a signed `decision` before execution and a signed
+`outcome` after, chained into `./journal.jsonl`. The generated
+`tesera.pub.pem` is the verifying key — keep it somewhere the journal
+cannot reach.
+
+## Verify evidence offline
+
+```sh
+node ./node_modules/tesera/verifiers/node/verify.mjs --journal ./journal.jsonl --public-key ./tesera.pub.pem
+```
+
+Output:
+
+```
+OK  ./journal.jsonl
+    2 events verified (independent node verifier)
+```
+
+The verifier is dependency-free (Node builtins only). No account, no
+server, no network.
+
+## What it is not
+
+- Not a workflow engine. Use Temporal, Airflow, or Cadence for orchestration.
+- Not a replacement for Stripe idempotency or provider-level guarantees.
+- Not a guarantee of exactly-once execution. A crash between the side
+  effect and the outcome record still needs a human to check the provider.
+- Not an LLM in the loop. Verification is deterministic, always.
+- Not proof the external world changed. A `succeeded` outcome means the
+  function returned — not that the payment processor acted.
+
+The full boundary is in `docs/THREAT_MODEL.md`. Read it before relying on
+the evidence for anything that matters.
+
+## Evidence format
+
+The journal is newline-delimited JSON, specified in
+`docs/EVIDENCE_FORMAT_v1.md`. Any language can verify this format: the
+format is the contract, not the library. Committed cross-language vectors
+in `verifiers/vectors/v1/` are checked by both implementations, and the
+Python package verifies TypeScript-written journals and vice versa.
+
+## Status
+
+Works today: approval-gated guard with signed decision/outcome evidence,
+file journals, offline verification, budgets/rate-limit/quorum/declarative
+policy providers, checkpoints with witness files, idempotency, dry runs,
+receipts, and an HTTP witness client. Python remains the reference
+implementation; capabilities land there first and are ported where
+TypeScript agents need them.
+
+Does not exist yet: a public hosted witness service (private, not
+accepting external traffic).
+
+Planned (5 max): first npm release; a hosted witness for tail-truncation
+detection; a Stripe reconciliation adapter; a public verify binary; policy
+parity for new Python providers.
+
+## License
+
+MIT. See `LICENSE`.

@@ -116,3 +116,18 @@ one-sentence disambiguation. C7 first-public note + header fix. C8 no
 private links; remaining links resolve.
 New: docs/PRE_PUBLISH_HUMAN_TASKS.md (20-minute checklist).
 Human next: run the checklist, publish manually, report versions.
+
+## Closeout commit 2 — final build verification PASSED 2026-09-26
+
+* Fresh clone (`/tmp/tesera-final`) rebuilt: wheel same 35 files (only
+  METADATA+RECORD differ, solely from intended README edits since the
+  phase-4 build); sdist file delta is new docs only; sdist root README
+  byte-identical to current. No leaks in any artifact (npm tarball: 32
+  files, clean, rebuilt after the audit's Lock.ts change).
+* Versions: pyproject 0.2.0, package.json 0.2.0, CHANGELOG 0.2.0. No
+  `py@`/`ts@` tags exist yet — created by the human at publish time.
+* README example vs fresh wheel install: exact output
+  (`{'id': 're_123', 'amount_cents': 1999}`). Fresh journal verified by
+  both `tesera verify --checkpoint` (3 events intact) and the Node
+  verifier (3 events verified).
+* Human next: commit 3 handoff docs, then manual publish.

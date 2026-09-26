@@ -14,9 +14,9 @@ from typing import Any
 
 import pytest
 
-from interceptor.engine import reset_idempotency_state
-from interceptor.journal import reset_idem_index, reset_precheck_cache
-from interceptor.observer import reset_notifications
+from tesera.engine import reset_idempotency_state
+from tesera.journal import reset_idem_index, reset_precheck_cache
+from tesera.observer import reset_notifications
 
 _REAL_SOCKET = socket.socket
 _REAL_CREATE_CONNECTION = socket.create_connection
@@ -67,5 +67,5 @@ def evidence_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """An isolated evidence home, so tests never touch the real one."""
     home = tmp_path / "evidence-home"
     home.mkdir()
-    monkeypatch.setenv("INTERCEPTOR_EVIDENCE_HOME", str(home))
+    monkeypatch.setenv("TESERA_EVIDENCE_HOME", str(home))
     return home

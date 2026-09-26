@@ -6,7 +6,7 @@ Matching with ``.lower()`` alone is trivially defeated by homoglyphs:
 all render identically to the ASCII name but are different code points.
 
 This file pins the normalization rule in
-:func:`interceptor.canonical.fold_name` and the end-to-end behavior:
+:func:`tesera.canonical.fold_name` and the end-to-end behavior:
 a secret planted under a lookalike name must be redacted exactly like the
 ASCII spelling, and the original spelling is what appears in the output.
 """
@@ -20,9 +20,9 @@ from typing import Any
 import pytest
 
 from helpers import allow
-from interceptor import guard
-from interceptor.canonical import REDACTED, canonicalize, fold_name
-from interceptor.redaction import SENSITIVE_NAMES
+from tesera import guard
+from tesera.canonical import REDACTED, canonicalize, fold_name
+from tesera.redaction import SENSITIVE_NAMES
 
 SECRET = "sk-live-HOMOGLYPH-TEST-0123456789"
 
@@ -101,7 +101,7 @@ def test_confused_dataclass_field_is_redacted() -> None:
 
 
 def test_declared_extra_names_are_folded() -> None:
-    from interceptor.redaction import build_sensitive_set
+    from tesera.redaction import build_sensitive_set
 
     extra = build_sensitive_set(["p\u0456n"])  # homoglyph of "pin"
     assert "pin" in extra

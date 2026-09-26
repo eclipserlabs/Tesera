@@ -14,8 +14,8 @@
 | Python CLI | `tesera` (entry point `tesera = tesera.cli:main`) |
 | TypeScript package (npm) | `tesera` |
 | TypeScript imports | `tesera` (Effect modules under the same package) |
-| Evidence home dir | `~/.tesera` (was `~/.interceptor`) |
-| Env prefix | `TESERA_*` (was `INTERCEPTOR_*`) |
+| Evidence home dir | `~/.tesera` (renamed; see CHANGELOG) |
+| Env prefix | `TESERA_*` (renamed; see CHANGELOG) |
 | Cloud repo/product | `tesera-cloud` / Tesera Cloud (private, unchanged spelling root) |
 
 ## Availability (checked 2026-09-26, before any rename)
@@ -34,10 +34,11 @@ check used the `%2f`-escaped form.
 
 ## Consequences
 
-* `src/interceptor/` → `src/tesera/` (git mv). All `interceptor` imports
-  become `tesera` imports. No logic changes.
-* `interceptor-effect` → `tesera` on npm.
-* `guardrail-evidence` and `rapture-fx/interceptor` URLs are superseded;
+* `src/` subpackage renamed to `src/tesera/` (git mv). All internal
+  imports renamed accordingly. No logic changes.
+* The TypeScript package becomes `tesera` on npm.
+* Pre-rename repository URLs and the colliding PyPI name are superseded
+  (exact previous spellings recorded in CHANGELOG.md's rename entry);
   git repositories themselves are NOT renamed (per task constraints).
 * The evidence format is untouched by the rename (bytes are identical;
   only the producing library's name changes).

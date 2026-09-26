@@ -10,17 +10,17 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
 from helpers import allow, deny
-from interceptor import (
+from tesera import (
     audit_journal,
     audit_journal_streaming,
     guard,
     resolve_journal,
     witness_journal,
 )
-from interceptor.audit import _AUDIT_EVENT_FIELDS, _project_audit_event
-from interceptor.errors import ActionDenied, DuplicateActionError, EvidenceAuditError
-from interceptor.identity import load_trusted_public_keys
-from interceptor.verification import load_journal_snapshot
+from tesera.audit import _AUDIT_EVENT_FIELDS, _project_audit_event
+from tesera.errors import ActionDenied, DuplicateActionError, EvidenceAuditError
+from tesera.identity import load_trusted_public_keys
+from tesera.verification import load_journal_snapshot
 
 VECTORS_DIR = Path(__file__).resolve().parent.parent / "verifiers" / "vectors" / "v1"
 
@@ -63,7 +63,7 @@ def _rich_journal(evidence_home: Path, tmp_path: Path) -> Path:
     with pytest.raises(DuplicateActionError):
         idem("o1")
 
-    from interceptor.verification import verify_journal
+    from tesera.verification import verify_journal
 
     identity_keys = load_trusted_public_keys(evidence_home)
     # Resolve the failed invocation as not-completed (retry is safe).

@@ -561,7 +561,7 @@ def _event_hash_from_line(line: bytes, handle: io.BufferedRandom | io.BufferedRe
     except (ValueError, KeyError, UnicodeDecodeError) as exc:
         raise JournalError(
             "journal tail is corrupt; refusing to extend a broken chain "
-            f"(run `interceptor verify` on {handle.name})"
+            f"(run `tesera verify` on {handle.name})"
         ) from exc
     if not isinstance(event_hash, str):
         raise JournalError("journal tail has a non-string event_hash; refusing to extend")
@@ -930,7 +930,7 @@ def _read_last_event_hash_scan(handle: io.BufferedRandom) -> str | None:
     except (ValueError, KeyError, UnicodeDecodeError) as exc:
         raise JournalError(
             "journal tail is corrupt; refusing to extend a broken chain "
-            f"(run `interceptor verify` on {handle.name})"
+            f"(run `tesera verify` on {handle.name})"
         ) from exc
     if not isinstance(event_hash, str):
         raise JournalError("journal tail has a non-string event_hash; refusing to extend")

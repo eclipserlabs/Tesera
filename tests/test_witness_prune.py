@@ -9,9 +9,9 @@ from pathlib import Path
 import pytest
 
 from helpers import allow
-from interceptor import guard, prune_witnesses, verify_journal, witness_journal
-from interceptor.errors import JournalError
-from interceptor.identity import load_trusted_public_keys
+from tesera import guard, prune_witnesses, verify_journal, witness_journal
+from tesera.errors import JournalError
+from tesera.identity import load_trusted_public_keys
 
 
 def _stamp(path: Path, *, mtime_ns: int) -> Path:
@@ -95,7 +95,7 @@ def test_prune_keeps_newest_bound_covering_journal(evidence_home: Path, tmp_path
 
 
 def test_prune_cli(evidence_home: Path, tmp_path: Path, capsys):
-    from interceptor.cli import EXIT_FAILURE, EXIT_OK, main
+    from tesera.cli import EXIT_FAILURE, EXIT_OK, main
 
     journal = evidence_home / "journal.jsonl"
 

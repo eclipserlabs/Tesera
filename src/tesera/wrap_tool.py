@@ -38,7 +38,7 @@ from .redaction import build_sensitive_set, compile_value_patterns
 P = ParamSpec("P")
 R = TypeVar("R")
 
-_CONTRACT_ATTR = "__interceptor_contract__"
+_CONTRACT_ATTR = "__tesera_contract__"
 
 
 def _tool_name(func: Any) -> str | None:

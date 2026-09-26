@@ -12,7 +12,7 @@ Fail-closed ordering is load-bearing and must stay exactly as it is:
 1. Bind call arguments to parameter names (``inspect.signature``), applying
    defaults. A ``TypeError`` from binding propagates unchanged: the call was
    malformed and nothing has executed or been recorded.
-2. Notify the :class:`~interceptor.observer.ActionObserver`, if one was
+2. Notify the :class:`~tesera.observer.ActionObserver`, if one was
    configured, once per contract version per process. Failure is a
    pre-execution error: the function does not run.
 3. Redact and canonicalize the bound arguments in a single fused traversal
@@ -24,14 +24,14 @@ Fail-closed ordering is load-bearing and must stay exactly as it is:
    executes twice.
 6. Evaluate approval (fail closed on provider failure or missing TTY).
 7. Durably append a signed ``decision`` event BEFORE any execution.
-   Denied → raise :class:`~interceptor.errors.ActionDenied`; nothing
+   Denied → raise :class:`~tesera.errors.ActionDenied`; nothing
    executes. ``dry_run`` returns here without executing and without an
    outcome event.
 8. Execute the original function exactly once (unless dry-run).
 9. Durably append a signed ``outcome`` event (succeeded/failed).
 
 Post-execution evidence failure is reported as
-:class:`~interceptor.errors.ExecutionCompletedEvidenceError` — a
+:class:`~tesera.errors.ExecutionCompletedEvidenceError` — a
 distinct error meaning "the function ALREADY ran, but outcome evidence could
 not be persisted". The function is never retried.
 
@@ -77,7 +77,7 @@ from .errors import (
     DuplicateActionError,
     EventShipError,
     ExecutionCompletedEvidenceError,
-    InterceptorError,
+    TeseraError,
 )
 from .identity import LocalSigningIdentity, SigningIdentity, default_journal_path
 from .journal import (
@@ -194,7 +194,7 @@ def _journal_key(store: JournalStore) -> str:
         except OSError:
             return f"file:{path}"
     try:
-        existing = getattr(store, "__interceptor_store_token__", None)
+        existing = getattr(store, "__tesera_store_token__", None)
         if isinstance(existing, str) and existing:
             return existing
     except Exception:  # noqa: S110 - probing for a cached token must not fail
@@ -204,7 +204,7 @@ def _journal_key(store: JournalStore) -> str:
 
         token = f"store:{_uuid.uuid4().hex}"
         try:
-            store.__interceptor_store_token__ = token  # type: ignore[attr-defined]
+            store.__tesera_store_token__ = token  # type: ignore[attr-defined]
         except Exception:
             global _STORE_TOKEN_COUNTER
             with _STORE_TOKEN_GUARD:
@@ -734,7 +734,7 @@ def _evaluate_approval(
         active = provider or TerminalApprovalProvider()
     try:
         decision = active.decide(request)
-    except InterceptorError:
+    except TeseraError:
         raise
     except Exception as exc:
         raise ApprovalError(

@@ -1,6 +1,6 @@
-"""Exception hierarchy for the interceptor SDK.
+"""Exception hierarchy for the tesera SDK.
 
-Every error raised by the SDK derives from :class:`InterceptorError` so callers can
+Every error raised by the SDK derives from :class:`TeseraError` so callers can
 distinguish guard-layer failures from failures raised by the guarded function
 itself (which are always re-raised unwrapped).
 """
@@ -8,11 +8,11 @@ itself (which are always re-raised unwrapped).
 from __future__ import annotations
 
 
-class InterceptorError(Exception):
+class TeseraError(Exception):
     """Base class for all errors raised by the SDK."""
 
 
-class ContractError(InterceptorError):
+class ContractError(TeseraError):
     """The action contract could not be built or is invalid.
 
     Raised at decoration time (e.g. invalid explicit action name) so mistakes
@@ -39,7 +39,7 @@ class ToolWrapError(ContractError):
     """
 
 
-class CanonicalizationError(InterceptorError):
+class CanonicalizationError(TeseraError):
     """A value could not be converted to the canonical evidence representation.
 
     Raised before the guarded function executes (fail closed). Typical causes:
@@ -47,11 +47,11 @@ class CanonicalizationError(InterceptorError):
     """
 
 
-class RedactionError(InterceptorError):
+class RedactionError(TeseraError):
     """Input redaction failed. The guarded function is not executed."""
 
 
-class ApprovalError(InterceptorError):
+class ApprovalError(TeseraError):
     """The approval provider failed to produce a decision.
 
     This is distinct from :class:`ActionDenied`: the provider errored (or was
@@ -67,7 +67,7 @@ class ApprovalUnavailableError(ApprovalError):
     """
 
 
-class ActionDenied(InterceptorError):
+class ActionDenied(TeseraError):
     """The approval decision was *denied*; the guarded function did not run.
 
     A signed ``decision`` event with ``decision="denied"`` has been appended to
@@ -105,15 +105,15 @@ class DuplicateActionError(ActionDenied):
         )
 
 
-class IdentityError(InterceptorError):
+class IdentityError(TeseraError):
     """The local signing identity could not be created or loaded."""
 
 
-class SigningError(InterceptorError):
+class SigningError(TeseraError):
     """Signing an event failed. Pre-execution signing failures fail closed."""
 
 
-class JournalError(InterceptorError):
+class JournalError(TeseraError):
     """The journal could not be read or durably appended.
 
     When raised *before* execution, the guarded function has NOT run.
@@ -122,7 +122,7 @@ class JournalError(InterceptorError):
     """
 
 
-class EvidencePersistenceError(InterceptorError):
+class EvidencePersistenceError(TeseraError):
     """Base class for evidence persistence failures.
 
     Not every evidence persistence error means the guarded function ran. Use
@@ -243,11 +243,11 @@ class EventShipError(JournalError, EvidencePersistenceError):
         self.action_id = action_id
 
 
-class VerificationError(InterceptorError):
+class VerificationError(TeseraError):
     """A journal failed verification (corruption, tampering, bad signature)."""
 
 
-class EvidencePrivacyInspectionError(InterceptorError):
+class EvidencePrivacyInspectionError(TeseraError):
     """A local evidence privacy inspection could not be completed safely."""
 
     execution_occurred = False
@@ -255,7 +255,7 @@ class EvidencePrivacyInspectionError(InterceptorError):
     error_code = "evidence_privacy_inspection_failed"
 
 
-class EvidenceAuditError(InterceptorError):
+class EvidenceAuditError(TeseraError):
     """A journal could not be converted into a trustworthy action audit."""
 
     execution_occurred = False
@@ -263,17 +263,17 @@ class EvidenceAuditError(InterceptorError):
     error_code = "evidence_audit_failed"
 
 
-class ResolutionError(InterceptorError):
+class ResolutionError(TeseraError):
     """An operator resolution could not be recorded (unknown decision, bad result)."""
 
 
-class CountersignError(InterceptorError):
+class CountersignError(TeseraError):
     """A checkpoint could not be counter-signed (no checkpoint, bad key)."""
 
 
-class ArchiveError(InterceptorError):
+class ArchiveError(TeseraError):
     """A journal could not be archived (empty journal, concurrent write, bad path)."""
 
 
-class PolicyError(InterceptorError):
+class PolicyError(TeseraError):
     """A declarative policy file could not be loaded or is invalid."""

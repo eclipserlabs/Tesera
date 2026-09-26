@@ -9,20 +9,20 @@ from pathlib import Path
 
 import pytest
 
-import interceptor as ic
+import tesera as ic
 from helpers import allow, deny
-from interceptor import guard
-from interceptor.audit import InvocationStatus, audit_journal
-from interceptor.cosign import countersign_journal
-from interceptor.export import export_journal, journal_stats
-from interceptor.identity import (
+from tesera import guard
+from tesera.audit import InvocationStatus, audit_journal
+from tesera.cosign import countersign_journal
+from tesera.export import export_journal, journal_stats
+from tesera.identity import (
     EphemeralSigningIdentity,
     generate_private_key,
     load_trusted_public_keys,
 )
-from interceptor.policy import Rule, RuleProvider, load_policy_file
-from interceptor.resolve import resolve_journal
-from interceptor.verification import load_journal_snapshot, verify_journal
+from tesera.policy import Rule, RuleProvider, load_policy_file
+from tesera.resolve import resolve_journal
+from tesera.verification import load_journal_snapshot, verify_journal
 
 
 def events(home: Path) -> list[dict]:
@@ -243,7 +243,7 @@ def test_load_policy_file_rejects_garbage(tmp_path):
 
 
 def test_rule_explain_names_first_match_and_default(tmp_path):
-    from interceptor.policy import Rule
+    from tesera.policy import Rule
 
     provider = RuleProvider(
         [
@@ -286,7 +286,7 @@ def test_rule_explain_names_first_match_and_default(tmp_path):
 
 
 def test_countersign_full_loop(evidence_home, tmp_path):
-    from interceptor import checkpoint_journal
+    from tesera import checkpoint_journal
 
     @guard(action="test.cosign", approval_provider=allow())
     def act() -> str:
@@ -312,7 +312,7 @@ def test_countersign_full_loop(evidence_home, tmp_path):
             format=serialization.PublicFormat.SubjectPublicKeyInfo,
         )
     )
-    from interceptor.identity import load_public_key
+    from tesera.identity import load_public_key
 
     keys = (*trusted_keys(evidence_home), load_public_key(counter_pub))
     result = verify_journal(journal, keys)
@@ -329,7 +329,7 @@ def test_countersign_requires_checkpoint(evidence_home, tmp_path):
 
 
 def test_generate_key_refuses_overwrite(tmp_path):
-    from interceptor.identity import IdentityError
+    from tesera.identity import IdentityError
 
     path = tmp_path / "k.pem"
     generate_private_key(path)
@@ -348,13 +348,13 @@ def test_export_json_and_html(evidence_home, tmp_path):
     act()
     journal = evidence_home / "journal.jsonl"
     bundle = export_journal(journal, trusted_keys(evidence_home))
-    assert bundle["format"] == "interceptor-evidence-pack/1"
+    assert bundle["format"] == "tesera-evidence-pack/1"
     assert bundle["verification"]["valid"]
     assert bundle["audit"]["structurally_valid"]
 
     out_json = tmp_path / "pack.json"
     ic.write_pack(bundle, out_json, "json")
-    assert json.loads(out_json.read_text())["format"] == "interceptor-evidence-pack/1"
+    assert json.loads(out_json.read_text())["format"] == "tesera-evidence-pack/1"
 
     out_html = tmp_path / "pack.html"
     ic.write_pack(bundle, out_html, "html")
@@ -387,7 +387,7 @@ def test_stats_counts(evidence_home):
 
 
 def test_concurrent_appends_stay_valid(evidence_home):
-    from interceptor.verification import verify_journal as _verify
+    from tesera.verification import verify_journal as _verify
 
     @guard(action="test.concurrent", approval_provider=allow())
     def act(n: int) -> int:
@@ -419,7 +419,7 @@ def test_concurrent_appends_stay_valid(evidence_home):
 
 
 def test_cli_resolve_round_trip(evidence_home, capsys):
-    from interceptor.cli import EXIT_OK, main
+    from tesera.cli import EXIT_OK, main
 
     @guard(action="test.cli-resolve", approval_provider=allow())
     def act() -> str:
@@ -450,14 +450,14 @@ def test_cli_resolve_round_trip(evidence_home, capsys):
 
 
 def test_cli_resolve_bad_decision(evidence_home):
-    from interceptor.cli import EXIT_FAILURE, main
+    from tesera.cli import EXIT_FAILURE, main
 
     assert main(["resolve", "--decision", "nope", "--result", "completed"]) == EXIT_FAILURE
 
 
 def test_cli_countersign_and_keygen(evidence_home, tmp_path, capsys):
-    from interceptor import checkpoint_journal
-    from interceptor.cli import EXIT_FAILURE, EXIT_OK, main
+    from tesera import checkpoint_journal
+    from tesera.cli import EXIT_FAILURE, EXIT_OK, main
 
     @guard(action="test.cli-cosign", approval_provider=allow())
     def act() -> str:
@@ -477,7 +477,7 @@ def test_cli_countersign_and_keygen(evidence_home, tmp_path, capsys):
 
 
 def test_cli_export_and_stats(evidence_home, tmp_path, capsys):
-    from interceptor.cli import EXIT_FAILURE, EXIT_OK, main
+    from tesera.cli import EXIT_FAILURE, EXIT_OK, main
 
     @guard(action="test.cli-export", approval_provider=allow())
     def act() -> str:
@@ -491,7 +491,7 @@ def test_cli_export_and_stats(evidence_home, tmp_path, capsys):
     assert main(["export", "--format", "html", "--output", str(out_html)]) == EXIT_OK
     assert "<html" in out_html.read_text()
     assert main(["export"]) == EXIT_OK
-    assert "interceptor-evidence-pack/1" in capsys.readouterr().out
+    assert "tesera-evidence-pack/1" in capsys.readouterr().out
     assert main(["stats"]) == EXIT_OK
     out = capsys.readouterr().out
     assert "test.cli-export" in out
@@ -505,7 +505,7 @@ def test_cli_export_and_stats(evidence_home, tmp_path, capsys):
 
 
 def test_countersignature_orphan_detected(evidence_home, tmp_path):
-    from interceptor import checkpoint_journal
+    from tesera import checkpoint_journal
 
     @guard(action="test.orphan", approval_provider=allow())
     def act() -> str:
@@ -525,10 +525,10 @@ def test_countersignature_orphan_detected(evidence_home, tmp_path):
     ]
     journal.write_text("\n".join(kept) + "\n")
     signer = EphemeralSigningIdentity.from_file(counter_key)
-    from interceptor.identity import key_id_for
+    from tesera.identity import key_id_for
 
     counter_id = key_id_for(signer.public_key())
-    from interceptor.identity import load_public_key as _lpk
+    from tesera.identity import load_public_key as _lpk
 
     result = verify_journal(journal, trusted_keys(evidence_home))
     assert not result.valid
@@ -538,8 +538,8 @@ def test_countersignature_orphan_detected(evidence_home, tmp_path):
 
 
 def test_resolution_bad_values_rejected(evidence_home):
-    from interceptor.identity import LocalSigningIdentity
-    from interceptor.journal import (
+    from tesera.identity import LocalSigningIdentity
+    from tesera.journal import (
         EVENT_SCHEMA_VERSION,
         FileJournal,
         finalize_event,
@@ -580,7 +580,7 @@ def test_resolution_bad_values_rejected(evidence_home):
 
 
 def test_resolve_note_bounded_and_missing_journal(tmp_path):
-    from interceptor.resolve import resolve_journal as _resolve
+    from tesera.resolve import resolve_journal as _resolve
 
     journal = tmp_path / "journal.jsonl"
     with pytest.raises(ic.ResolutionError):
@@ -681,7 +681,7 @@ def test_receipt_must_be_a_mapping(evidence_home):
 
 
 def test_quorum_provider():
-    from interceptor.policy import QuorumApprovalProvider
+    from tesera.policy import QuorumApprovalProvider
 
     req = ic.ApprovalRequest(
         action_name="a",
@@ -707,7 +707,7 @@ def test_quorum_provider():
 def test_approval_server_allow_deny(allow_socket_creation):
     import urllib.request
 
-    from interceptor.approve_server import ApprovalServer, ServerApprovalProvider
+    from tesera.approve_server import ApprovalServer, ServerApprovalProvider
 
     with ApprovalServer() as server:
         assert server.url.startswith("http://127.0.0.1:")
@@ -774,7 +774,7 @@ def test_approval_server_rejects_forged_decision_token(allow_socket_creation):
     import urllib.parse as _parse
     import urllib.request as _request
 
-    from interceptor.approve_server import ApprovalServer, ServerApprovalProvider
+    from tesera.approve_server import ApprovalServer, ServerApprovalProvider
 
     with ApprovalServer() as server:
         provider = ServerApprovalProvider(server, timeout_seconds=10)
@@ -835,7 +835,7 @@ def test_approval_server_rejects_forged_decision_token(allow_socket_creation):
 
 
 def test_approval_server_timeout(allow_socket_creation):
-    from interceptor.approve_server import ApprovalServer, ServerApprovalProvider
+    from tesera.approve_server import ApprovalServer, ServerApprovalProvider
 
     with ApprovalServer() as server:
         provider = ServerApprovalProvider(server, timeout_seconds=0.1)
@@ -855,7 +855,7 @@ def test_approval_server_timeout(allow_socket_creation):
 def test_server_provider_end_to_end(evidence_home, allow_socket_creation):
     import threading as _threading
 
-    from interceptor.approve_server import ApprovalServer, ServerApprovalProvider
+    from tesera.approve_server import ApprovalServer, ServerApprovalProvider
 
     with ApprovalServer() as server:
         provider = ServerApprovalProvider(server, timeout_seconds=15)
@@ -907,7 +907,7 @@ def test_server_provider_end_to_end(evidence_home, allow_socket_creation):
 
 
 def test_describe_tool_schema():
-    from interceptor.schemas import as_openai_tool, describe_tool, mcp_tool
+    from tesera.schemas import as_openai_tool, describe_tool, mcp_tool
 
     def refund(customer_id: str, amount_cents: int, note: str | None = None) -> dict:
         """Refund a customer."""
@@ -948,7 +948,7 @@ def test_describe_tool_schema():
 
 
 def test_describe_guarded_keeps_signature(evidence_home):
-    from interceptor.schemas import describe_tool
+    from tesera.schemas import describe_tool
 
     @guard(action="test.schema-guarded", approval_provider=allow())
     def act(customer_id: str, amount_cents: int = 100) -> dict:
@@ -963,7 +963,7 @@ def test_describe_guarded_keeps_signature(evidence_home):
 
 
 def test_archive_round_trip(evidence_home):
-    from interceptor import archive_journal
+    from tesera import archive_journal
 
     @guard(action="test.archive", approval_provider=allow())
     def act() -> str:
@@ -989,7 +989,7 @@ def test_archive_round_trip(evidence_home):
 
 
 def test_archive_empty_and_keep(evidence_home):
-    from interceptor import archive_journal
+    from tesera import archive_journal
 
     journal = evidence_home / "journal.jsonl"
     journal.write_text("")
@@ -1011,7 +1011,7 @@ def test_archive_empty_and_keep(evidence_home):
 
 
 def test_cli_archive(evidence_home, capsys):
-    from interceptor.cli import EXIT_OK, main
+    from tesera.cli import EXIT_OK, main
 
     @guard(action="test.cli-archive", approval_provider=allow())
     def act() -> str:

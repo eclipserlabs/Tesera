@@ -1,4 +1,4 @@
-"""``interceptor`` — offline evidence for a local journal, no network involved.
+"""``tesera`` — offline evidence for a local journal, no network involved.
 
 That is the point: evidence you can only check by asking a service is evidence
 you are trusting the service about. Read-only subcommands (``verify``,
@@ -7,25 +7,25 @@ never modify the journal; mutating ones (``checkpoint``, ``countersign``,
 ``resolve``, ``archive``, ``key-rotate``, ``keygen``, ``witness``,
 ``export --output``) say so in their help.
 
-    interceptor verify [--journal PATH] [--public-key PATH] [--checkpoint PATH]
+    tesera verify [--journal PATH] [--public-key PATH] [--checkpoint PATH]
                      [--witness-max-age SECONDS] [--json]
-    interceptor verify-chain [--journal PATH] [--public-key PATH] [--json]
-    interceptor witness --witness-dir DIR [--journal PATH] [--counter-key PATH] [--json]
-    interceptor witness-audit --witness-dir DIR [--journal PATH] [--public-key PATH] [--json]
-    interceptor witness-prune --witness-dir DIR --keep N [--json]
-    interceptor audit [--journal PATH] [--public-key PATH] [--status S] [--limit N] [--json]
-    interceptor policy-test --policy FILE --action NAME --risk RISK
+    tesera verify-chain [--journal PATH] [--public-key PATH] [--json]
+    tesera witness --witness-dir DIR [--journal PATH] [--counter-key PATH] [--json]
+    tesera witness-audit --witness-dir DIR [--journal PATH] [--public-key PATH] [--json]
+    tesera witness-prune --witness-dir DIR --keep N [--json]
+    tesera audit [--journal PATH] [--public-key PATH] [--status S] [--limit N] [--json]
+    tesera policy-test --policy FILE --action NAME --risk RISK
                       [--expect allowed|denied] [--json]
-    interceptor checkpoint [--journal PATH] [--witness PATH] [--json]
-    interceptor countersign --signing-key PATH [--journal PATH] [--json]
-    interceptor resolve --decision ID --result completed|not-completed [--journal PATH]
-    interceptor keygen --output PATH [--json]
-    interceptor key-rotate [--journal PATH] [--no-record] [--json]
-    interceptor export [--journal PATH] [--format json|html] [--output PATH]
-    interceptor stats [--journal PATH] [--json]
-    interceptor archive [--journal PATH] [--keep N] [--json]
-    interceptor key-info [--json]
-    interceptor inspect [--journal PATH] [--json]
+    tesera checkpoint [--journal PATH] [--witness PATH] [--json]
+    tesera countersign --signing-key PATH [--journal PATH] [--json]
+    tesera resolve --decision ID --result completed|not-completed [--journal PATH]
+    tesera keygen --output PATH [--json]
+    tesera key-rotate [--journal PATH] [--no-record] [--json]
+    tesera export [--journal PATH] [--format json|html] [--output PATH]
+    tesera stats [--journal PATH] [--json]
+    tesera archive [--journal PATH] [--keep N] [--json]
+    tesera key-info [--json]
+    tesera inspect [--journal PATH] [--json]
 
 Exit codes: ``0`` success; ``1`` verification, audit, or export failure
 (including structurally invalid or tampered evidence); ``2`` usage error
@@ -44,7 +44,7 @@ from typing import Any
 from . import __version__
 from .audit import InvocationStatus, audit_journal_streaming
 from .checkpoint import checkpoint_journal
-from .errors import InterceptorError
+from .errors import TeseraError
 from .identity import (
     LocalSigningIdentity,
     default_journal_path,
@@ -64,7 +64,7 @@ EXIT_FAILURE = 1
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="interceptor",
+        prog="tesera",
         description="Verify and inspect a local evidence journal, offline.",
     )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
@@ -385,7 +385,7 @@ def main(argv: list[str] | None = None) -> int:
             return _cmd_stats(args)
         if args.command == "archive":
             return _cmd_archive(args)
-    except InterceptorError as exc:
+    except TeseraError as exc:
         _fail(f"{type(exc).__name__}: {exc}", as_json=getattr(args, "json", False))
         return EXIT_FAILURE
     parser.error(f"unknown command {args.command!r}")  # exits with code 2
@@ -401,7 +401,7 @@ def _cmd_verify(args: argparse.Namespace) -> int:
 
     try:
         keys = _resolve_verification_keys(args)
-    except InterceptorError as exc:
+    except TeseraError as exc:
         _fail(str(exc), as_json=args.json)
         return EXIT_FAILURE
     if not keys:
@@ -450,7 +450,7 @@ def _cmd_verify(args: argparse.Namespace) -> int:
                 print(
                     "    WARNING: covering witness is older than "
                     f"--witness-max-age {args.witness_max_age}s; "
-                    "the truncation bound is stale — run `interceptor witness`"
+                    "the truncation bound is stale — run `tesera witness`"
                 )
         else:
             print("    note: tail truncation is detectable only with a checkpoint witness")
@@ -525,7 +525,7 @@ def _cmd_inspect(args: argparse.Namespace) -> int:
 
     try:
         report = inspect_journal(journal_path, public_key_path=getattr(args, "public_key", None))
-    except InterceptorError as exc:
+    except TeseraError as exc:
         _fail(str(exc), as_json=args.json)
         return EXIT_FAILURE
     payload = {
@@ -583,7 +583,7 @@ def _cmd_audit(args: argparse.Namespace) -> int:
 
     try:
         keys = _resolve_verification_keys(args)
-    except InterceptorError as exc:
+    except TeseraError as exc:
         _fail(str(exc), as_json=args.json)
         return EXIT_FAILURE
     if not keys:
@@ -685,7 +685,7 @@ def _cmd_checkpoint(args: argparse.Namespace) -> int:
         print(f"  head sha256:      {report.head_sha256}")
         print(f"  witness:          {report.witness_path}")
         print("  Keep the witness somewhere the journal cannot reach; verify with")
-        print(f"    interceptor verify --checkpoint {report.witness_path}")
+        print(f"    tesera verify --checkpoint {report.witness_path}")
     return EXIT_OK
 
 
@@ -718,7 +718,7 @@ def _password_from_env(var: str | None) -> str | None:
 
     value = _os.environ.get(var)
     if not value:
-        raise InterceptorError(f"password env var {var!r} is not set or empty")
+        raise TeseraError(f"password env var {var!r} is not set or empty")
     return value
 
 
@@ -781,7 +781,7 @@ def _cmd_export(args: argparse.Namespace) -> int:
         return EXIT_FAILURE
     try:
         keys = _resolve_verification_keys(args)
-    except InterceptorError as exc:
+    except TeseraError as exc:
         _fail(str(exc), as_json=args.json)
         return EXIT_FAILURE
     if not keys:
@@ -816,7 +816,7 @@ def _cmd_stats(args: argparse.Namespace) -> int:
         return EXIT_FAILURE
     try:
         keys = _resolve_verification_keys(args)
-    except InterceptorError as exc:
+    except TeseraError as exc:
         _fail(str(exc), as_json=args.json)
         return EXIT_FAILURE
     if not keys:
@@ -877,7 +877,7 @@ def _cmd_verify_chain(args: argparse.Namespace) -> int:
         return EXIT_FAILURE
     try:
         keys = _resolve_verification_keys(args)
-    except InterceptorError as exc:
+    except TeseraError as exc:
         _fail(str(exc), as_json=args.json)
         return EXIT_FAILURE
     if not keys:
@@ -936,7 +936,7 @@ def _cmd_witness(args: argparse.Namespace) -> int:
         print(f"  events committed: {report.checkpoint_count}")
         print(f"  shipped witness:  {report.shipped_path}")
         print("  Verify later with")
-        print(f"    interceptor verify --checkpoint {report.shipped_path}")
+        print(f"    tesera verify --checkpoint {report.shipped_path}")
         if report.countersignature_event_id is not None:
             print(f"  countersigned:    {report.countersignature_event_id}")
     return EXIT_OK
@@ -951,7 +951,7 @@ def _cmd_witness_audit(args: argparse.Namespace) -> int:
         return EXIT_FAILURE
     try:
         keys = _resolve_verification_keys(args)
-    except InterceptorError as exc:
+    except TeseraError as exc:
         _fail(str(exc), as_json=args.json)
         return EXIT_FAILURE
     if not keys:

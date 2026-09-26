@@ -16,7 +16,7 @@ Semantics, chosen so that an observer cannot weaken the guarantees:
   before execution. Not once per call — the contract is what it reports, and
   the contract does not change between calls.
 * Never receives arguments, results, events, journals, or key material. Only
-  the :class:`~interceptor.contracts.ActionContract`, which is derived
+  the :class:`~tesera.contracts.ActionContract`, which is derived
   from the function's declaration and contains no runtime data.
 * A failure **prevents execution**. If the observer raises, the guarded
   function does not run and nothing is recorded. There is no silent fallback:

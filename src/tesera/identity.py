@@ -1,7 +1,7 @@
 """Local Ed25519 signing identity.
 
-On first use, the library creates a per-user signing identity under ``~/.interceptor``
-(override with the ``INTERCEPTOR_EVIDENCE_HOME`` environment variable):
+On first use, the library creates a per-user signing identity under ``~/.tesera``
+(override with the ``TESERA_EVIDENCE_HOME`` environment variable):
 
 * ``signing_key.pem``  — Ed25519 private key, PKCS#8 PEM, mode ``0600``
 * ``verify_key.pem``   — Ed25519 public key, SubjectPublicKeyInfo PEM
@@ -12,7 +12,7 @@ printed and never included in events.
 
 ``key_id`` is derived from the public key: ``ed25519:`` followed by the first
 16 hex characters of the SHA-256 of the raw 32-byte public key. The full
-SHA-256 hex is exposed as the *fingerprint* via ``interceptor key-info``.
+SHA-256 hex is exposed as the *fingerprint* via ``tesera key-info``.
 
 Signature scheme (matching the guard runtime receipt convention): the signer
 computes ``digest = SHA-256(canonical_unsigned_payload_bytes)`` and produces
@@ -51,11 +51,11 @@ _identity_lock = threading.Lock()
 
 
 def evidence_home() -> Path:
-    """The evidence home directory (``INTERCEPTOR_EVIDENCE_HOME`` or ``~/.interceptor``)."""
-    override = os.environ.get("INTERCEPTOR_EVIDENCE_HOME")
+    """The evidence home directory (``TESERA_EVIDENCE_HOME`` or ``~/.tesera``)."""
+    override = os.environ.get("TESERA_EVIDENCE_HOME")
     if override:
         return Path(override).expanduser()
-    return Path.home() / ".interceptor"
+    return Path.home() / ".tesera"
 
 
 def default_journal_path() -> Path:

@@ -20,8 +20,8 @@ from typing import Any, NamedTuple
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
-from interceptor.canonical import canonicalize
-from interceptor.redaction import SENSITIVE_NAMES
+from tesera.canonical import canonicalize
+from tesera.redaction import SENSITIVE_NAMES
 
 SECRET = "sk-live-PROPERTY-TEST-SECRET-abcdef123456"
 

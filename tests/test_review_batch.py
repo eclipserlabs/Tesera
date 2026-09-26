@@ -11,7 +11,7 @@ import json
 import pytest
 
 from helpers import allow, deny
-from interceptor import (
+from tesera import (
     FileBudgetProvider,
     guard,
     inspect_journal,
@@ -21,8 +21,8 @@ from interceptor import (
     wrap_tool,
     wrap_tools,
 )
-from interceptor.approval import ApprovalDecision, ApprovalRequest
-from interceptor.errors import (
+from tesera.approval import ApprovalDecision, ApprovalRequest
+from tesera.errors import (
     ActionDenied,
     ApprovalError,
     ContractError,
@@ -32,9 +32,9 @@ from interceptor.errors import (
     PolicyError,
     ToolWrapError,
 )
-from interceptor.identity import load_trusted_public_keys
-from interceptor.journal import FileJournal
-from interceptor.shipping import FanoutJournalStore
+from tesera.identity import load_trusted_public_keys
+from tesera.journal import FileJournal
+from tesera.shipping import FanoutJournalStore
 
 
 def _req() -> ApprovalRequest:
@@ -79,7 +79,7 @@ def test_provider_denial_matching_duplicate_text_stays_denied(evidence_home, tmp
 
 
 def test_export_output_exit_code_reflects_validity(evidence_home, tmp_path, capsys):
-    from interceptor.cli import EXIT_FAILURE, EXIT_OK, main
+    from tesera.cli import EXIT_FAILURE, EXIT_OK, main
 
     journal = evidence_home / "journal.jsonl"
 
@@ -100,7 +100,7 @@ def test_export_output_exit_code_reflects_validity(evidence_home, tmp_path, caps
 
 
 def test_export_html_json_conflict_is_usage_error(capsys):
-    from interceptor.cli import main
+    from tesera.cli import main
 
     with pytest.raises(SystemExit) as exc_info:
         main(["export", "--format", "html", "--json"])
@@ -108,7 +108,7 @@ def test_export_html_json_conflict_is_usage_error(capsys):
 
 
 def test_archive_keep_rejects_non_positive(capsys):
-    from interceptor.cli import main
+    from tesera.cli import main
 
     with pytest.raises(SystemExit) as exc_info:
         main(["archive", "--keep", "0"])
@@ -154,7 +154,7 @@ def test_inspect_clean_journal_stays_safe(evidence_home):
 
 
 def test_inspect_accepts_repeated_public_keys(evidence_home, tmp_path):
-    from interceptor.identity import LocalSigningIdentity, rotate_key
+    from tesera.identity import LocalSigningIdentity, rotate_key
 
     journal = evidence_home / "journal.jsonl"
 
@@ -312,7 +312,7 @@ def test_wrap_tools_translates_bad_action_and_rejects_defaults():
 
 
 def test_short_secrets_do_not_mangle_error_text_but_still_suppress_hashes():
-    from interceptor.redaction import scrub_text
+    from tesera.redaction import scrub_text
 
     assert scrub_text("y-axis and x", ["y", "x", "long-secret-value"]) == (
         "y-axis and x".replace("long-secret-value", "<REDACTED>")
@@ -323,7 +323,7 @@ def test_short_secrets_do_not_mangle_error_text_but_still_suppress_hashes():
 
 
 def test_render_html_rejects_malformed_bundle():
-    from interceptor import render_html
+    from tesera import render_html
 
     with pytest.raises(EvidenceAuditError):
         render_html({"journal": "x"})
@@ -337,7 +337,7 @@ def test_render_html_rejects_malformed_bundle():
 
 
 def test_archived_path_dot_segments_rejected(evidence_home, tmp_path):
-    from interceptor import checkpoint_journal
+    from tesera import checkpoint_journal
 
     journal = evidence_home / "journal.jsonl"
 
@@ -372,7 +372,7 @@ def test_archived_path_dot_segments_rejected(evidence_home, tmp_path):
 
 
 def test_resolve_note_truncation_marked(evidence_home, tmp_path):
-    from interceptor import resolve_journal as resolve
+    from tesera import resolve_journal as resolve
 
     journal = tmp_path / "j.jsonl"
 
@@ -393,7 +393,7 @@ def test_resolve_note_truncation_marked(evidence_home, tmp_path):
 
 
 def test_precheck_cache_tracks_appends(tmp_path):
-    from interceptor.journal import (
+    from tesera.journal import (
         find_blocking_idempotent_decision,
         find_completed_idempotent_decision,
         reset_precheck_cache,

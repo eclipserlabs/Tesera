@@ -7,15 +7,15 @@ import json
 import pytest
 
 from helpers import allow
-from interceptor import (
+from tesera import (
     guard,
     reconcile_journal,
     verify_journal,
     witness_journal,
 )
-from interceptor.checkpoint import checkpoint_journal
-from interceptor.errors import EvidenceAuditError
-from interceptor.identity import (
+from tesera.checkpoint import checkpoint_journal
+from tesera.errors import EvidenceAuditError
+from tesera.identity import (
     EphemeralSigningIdentity,
     generate_private_key,
     load_trusted_public_keys,
@@ -54,7 +54,7 @@ def test_witness_with_counter_key(evidence_home, tmp_path):
 
 
 def test_witness_cli(evidence_home, tmp_path, capsys):
-    from interceptor.cli import EXIT_OK, main
+    from tesera.cli import EXIT_OK, main
 
     journal = evidence_home / "journal.jsonl"
     _act(journal)(1)
@@ -71,7 +71,7 @@ def test_witness_cli(evidence_home, tmp_path, capsys):
 
 
 def test_witness_audit_covered_uncovered_and_empty(evidence_home, tmp_path):
-    from interceptor import audit_witnesses
+    from tesera import audit_witnesses
 
     journal = evidence_home / "journal.jsonl"
     _act(journal)(1)
@@ -94,7 +94,7 @@ def test_witness_audit_covered_uncovered_and_empty(evidence_home, tmp_path):
 
 
 def test_witness_audit_cli(evidence_home, tmp_path, capsys):
-    from interceptor.cli import EXIT_FAILURE, EXIT_OK, main
+    from tesera.cli import EXIT_FAILURE, EXIT_OK, main
 
     journal = evidence_home / "journal.jsonl"
     _act(journal)(1)
@@ -166,7 +166,7 @@ def test_reconcile_matched_mismatched_unknown(evidence_home):
 
 
 def test_stripe_fetcher_matches_and_mismatches(evidence_home):
-    from interceptor import StripeRefundFetcher
+    from tesera import StripeRefundFetcher
 
     journal = evidence_home / "journal.jsonl"
 
@@ -286,7 +286,7 @@ def test_reconcile_skips_receiptless_and_refuses_invalid(evidence_home):
 
 
 def test_witness_countersign_failure_keeps_witness(evidence_home, tmp_path):
-    from interceptor.errors import CountersignError
+    from tesera.errors import CountersignError
 
     journal = evidence_home / "journal.jsonl"
     _act(journal)(1)

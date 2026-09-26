@@ -7,6 +7,17 @@ pre-1.0 additive-only discipline until then).
 
 ## [Unreleased]
 
+### Renamed
+
+Product is now **Tesera** (see `docs/NAMING_DECISION.md`): the Python
+package, module, CLI, evidence home (`~/.tesera`), and env prefix
+(`TESERA_*`) formerly spelled `interceptor` (package previously
+`guardrail-evidence` on older URLs) are all `tesera` now —
+`import tesera`, `from tesera import guard`, `tesera verify`.
+`TeseraError` replaces `InterceptorError` (no alias). Frozen vector key
+seeds are unchanged, so all committed evidence vectors verify byte-for-byte
+under the new name. No logic changes; no evidence-format changes.
+
 ## [0.2.0] - 2026-09-07
 
 Production-hardening release (Python + TypeScript sibling, same version):

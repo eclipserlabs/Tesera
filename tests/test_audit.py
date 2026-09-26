@@ -7,10 +7,10 @@ import json
 import pytest
 
 from helpers import allow, deny
-from interceptor import ActionDenied, InvocationStatus, audit_journal, guard
-from interceptor.errors import EvidenceAuditError
-from interceptor.identity import LocalSigningIdentity
-from interceptor.journal import FileJournal, finalize_event, new_event_id, utc_timestamp
+from tesera import ActionDenied, InvocationStatus, audit_journal, guard
+from tesera.errors import EvidenceAuditError
+from tesera.identity import LocalSigningIdentity
+from tesera.journal import FileJournal, finalize_event, new_event_id, utc_timestamp
 
 
 def audit(home):

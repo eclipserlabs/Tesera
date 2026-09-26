@@ -1,6 +1,6 @@
 # External review guide
 
-For a security-minded reader evaluating `interceptor` without trusting its
+For a security-minded reader evaluating `tesera` without trusting its
 authors. Budget ~1 day.
 
 ## 1. Read the contract (30 min)

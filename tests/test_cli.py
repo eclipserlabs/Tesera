@@ -7,8 +7,8 @@ import json
 import pytest
 
 from helpers import allow
-from interceptor import guard
-from interceptor.cli import EXIT_FAILURE, EXIT_OK, main
+from tesera import guard
+from tesera.cli import EXIT_FAILURE, EXIT_OK, main
 
 
 def record(action: str = "cli.test", **kwargs) -> None:
@@ -146,7 +146,7 @@ def test_verify_warns_on_stale_covering_witness(evidence_home, tmp_path, capsys)
     import os
     import time
 
-    from interceptor import witness_journal
+    from tesera import witness_journal
 
     record()
     journal = evidence_home / "journal.jsonl"
@@ -195,13 +195,13 @@ def test_verify_warns_on_stale_covering_witness(evidence_home, tmp_path, capsys)
 
 
 def test_audit_max_events_refuses_oversized_journal(evidence_home, capsys):
-    from interceptor.errors import EvidenceAuditError
+    from tesera.errors import EvidenceAuditError
 
     record()
     record(action="cli.second")
     with pytest.raises(EvidenceAuditError, match="max-events"):
-        from interceptor import audit_journal_streaming
-        from interceptor.identity import load_trusted_public_keys
+        from tesera import audit_journal_streaming
+        from tesera.identity import load_trusted_public_keys
 
         audit_journal_streaming(
             evidence_home / "journal.jsonl",

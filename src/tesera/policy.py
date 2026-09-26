@@ -274,7 +274,7 @@ class TimeoutApprovalProvider:
                 self._in_flight_guard.release()
 
         worker = threading.Thread(
-            target=_run, daemon=True, name=f"interceptor-approval-{inner_name}"
+            target=_run, daemon=True, name=f"tesera-approval-{inner_name}"
         )
         worker.start()
         if not done.wait(self._timeout):
@@ -440,7 +440,7 @@ class RuleProvider:
 
         Returns the decision plus the zero-based index and glob of the first
         matching rule, or ``None``/``None`` when the default applied. This is
-        what ``interceptor policy-test`` reports, so operators can check a
+        what ``tesera policy-test`` reports, so operators can check a
         policy file without executing anything.
         """
         for index, rule in enumerate(self._rules):
@@ -871,7 +871,7 @@ class AttestedApprovalProvider:
         inner: ApprovalProvider,
         *,
         approved_by: str | None = None,
-        approved_by_env: str = "INTERCEPTOR_APPROVER",
+        approved_by_env: str = "TESERA_APPROVER",
     ) -> None:
         self._inner = inner
         self._approved_by = approved_by
@@ -913,7 +913,7 @@ class WitnessFreshnessProvider:
     that left the machine bounds it (see ``docs/THREAT_MODEL.md``). This
     provider turns that operational requirement into an approval gate: it
     stats ``witness_dir/latest.checkpoint`` (written by
-    :func:`interceptor.witness.witness_journal`) and denies when the witness
+    :func:`tesera.witness.witness_journal`) and denies when the witness
     is missing or older than *max_age_seconds*.
 
     *risks* optionally restricts enforcement to a risk subset (e.g.
@@ -972,7 +972,7 @@ class WitnessFreshnessProvider:
         except FileNotFoundError:
             return ApprovalDecision(
                 DECISION_DENIED,
-                f"no witness at {witness} (run `interceptor witness`); failing closed",
+                f"no witness at {witness} (run `tesera witness`); failing closed",
             )
         except NotADirectoryError as exc:
             return ApprovalDecision(
@@ -993,7 +993,7 @@ class WitnessFreshnessProvider:
             return ApprovalDecision(
                 DECISION_DENIED,
                 f"witness stale ({age:.0f}s old, max {self._max_age:g}s); "
-                "run `interceptor witness`; failing closed",
+                "run `tesera witness`; failing closed",
             )
         return ApprovalDecision(
             DECISION_ALLOWED, f"witness fresh ({age:.0f}s old, max {self._max_age:g}s)"

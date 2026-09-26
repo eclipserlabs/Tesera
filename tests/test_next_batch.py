@@ -7,16 +7,16 @@ import json
 import pytest
 
 from helpers import allow
-from interceptor import (
+from tesera import (
     FileBudgetProvider,
     FileRateLimitProvider,
     guard,
     verify_archive_chain,
 )
-from interceptor.approval import ApprovalRequest
-from interceptor.archive import archive_journal
-from interceptor.errors import DuplicateActionError, JournalError
-from interceptor.identity import (
+from tesera.approval import ApprovalRequest
+from tesera.archive import archive_journal
+from tesera.errors import DuplicateActionError, JournalError
+from tesera.identity import (
     LocalSigningIdentity,
     key_id_for,
     load_public_key,
@@ -24,9 +24,9 @@ from interceptor.identity import (
     record_rotation_event,
     rotate_key,
 )
-from interceptor.journal import FileJournal
-from interceptor.shipping import FanoutJournalStore, FileMirrorSink
-from interceptor.verification import verify_journal
+from tesera.journal import FileJournal
+from tesera.shipping import FanoutJournalStore, FileMirrorSink
+from tesera.verification import verify_journal
 
 
 def _req(action: str = "a.act") -> ApprovalRequest:
@@ -209,8 +209,8 @@ def test_fanout_ship_failure_policy(tmp_path):
 
 
 def _minimal_event(prev):
-    from interceptor.identity import LocalSigningIdentity
-    from interceptor.journal import (
+    from tesera.identity import LocalSigningIdentity
+    from tesera.journal import (
         EVENT_SCHEMA_VERSION,
         finalize_event,
         new_event_id,
@@ -244,7 +244,7 @@ def test_archive_chain_valid_and_cli(evidence_home):
     report = verify_archive_chain(journal, load_trusted_public_keys(evidence_home))
     assert report.valid, report.issues
     assert len(report.files_checked) == 2
-    from interceptor.cli import main
+    from tesera.cli import main
 
     assert main(["verify-chain", "--journal", str(journal)]) == 0
 
@@ -291,7 +291,7 @@ def test_key_rotate_cli_records_rotation(evidence_home, capsys):
         return x
 
     act(1)
-    from interceptor.cli import main
+    from tesera.cli import main
 
     assert main(["key-rotate", "--journal", str(journal)]) == 0
     capsys.readouterr()
@@ -307,7 +307,7 @@ def test_verify_chain_cli_json(evidence_home, capsys):
         return x
 
     act(1)
-    from interceptor.cli import main
+    from tesera.cli import main
 
     assert main(["verify-chain", "--journal", str(journal), "--json"]) == 0
     payload = json.loads(capsys.readouterr().out)

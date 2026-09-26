@@ -27,9 +27,9 @@ from typing import Any, NamedTuple
 import pytest
 
 from helpers import allow
-from interceptor import guard
-from interceptor.canonical import REDACTED, canonicalize
-from interceptor.redaction import SENSITIVE_NAMES
+from tesera import guard
+from tesera.canonical import REDACTED, canonicalize
+from tesera.redaction import SENSITIVE_NAMES
 
 SECRET = "sk-live-DO-NOT-LEAK-0123456789"
 
@@ -157,7 +157,7 @@ def test_secret_in_return_value_is_not_hashed_raw(evidence_home):
     ]
     outcome = next(e for e in events if e["event_type"] == "outcome")
 
-    from interceptor.canonical import canonical_json_bytes, sha256_hex
+    from tesera.canonical import canonical_json_bytes, sha256_hex
 
     leaked = sha256_hex(canonical_json_bytes({"api_key": SECRET, "user": "wira"}))
     assert outcome["redacted_output_hash"] != leaked

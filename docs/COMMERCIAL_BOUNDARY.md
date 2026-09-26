@@ -10,7 +10,7 @@
 
 A customer can always verify exported evidence without Tessera Cloud. That portability is the product's trust anchor, not a feature to be metered.
 
-## 2. Free library (MIT — Python `interceptor` + TS `interceptor-effect` + Node verifier)
+## 2. Free library (MIT — Python `tesera` + TS `tesera-effect` + Node verifier)
 
 * Approval gates: terminal/prompt, policy providers (budget, rate-limit, spending, quorum, attested, TTL, timeout, `AllOf`/`AnyOf`, glob/JSON rules, `policy-test`), LAN approval server, `ToolGateway`, `wrap_tools`.
 * Evidence production: `@guard` / Effect guard, signed hash-chained JSONL journal (all 7 event types), redaction + canonicalization, idempotency keys, dry runs, receipts, contracts + `describe_tool`/`as_openai_tool`/`mcp_tool`.

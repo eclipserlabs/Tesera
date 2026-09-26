@@ -8,7 +8,7 @@ The decision defaults to **deny**: only an explicit affirmative response
 (``y`` / ``yes``, case-insensitive) approves. When approval is required and
 stdin is not an interactive terminal (CI, cron, piped agent output) and no
 explicit provider was configured, the guard fails closed with
-:class:`~interceptor.errors.ApprovalUnavailableError`.
+:class:`~tesera.errors.ApprovalUnavailableError`.
 
 ``ApprovalProvider`` is a small protocol so tests — and, later, Connected
 mode's team approvals — can supply a different provider without changing
@@ -75,7 +75,7 @@ class TerminalApprovalProvider:
             )
         self._stdout.write(
             "\n"
-            "interceptor: approval required\n"
+            "tesera: approval required\n"
             f"  action: {request.action_name}\n"
             f"  risk:   {request.risk}\n"
             f"  input:  {request.redacted_input_summary or '(no arguments)'}\n"

@@ -1,0 +1,24 @@
+[Unit]
+Description=tesera: checkpoint journal and ship witness off-host
+Documentation=https://github.com/eclipserlabs/tesera/blob/main/docs/DEPLOYMENT.md
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+# Run as the app user; the witness dir MUST live where the journal cannot
+# reach (separate mount / second host sync / WORM bucket sync target).
+User=tesera
+Group=tesera
+# Override via `systemctl edit`: journal path, witness dir, optional key.
+Environment=TESERA_JOURNAL=%h/.tesera/journal.jsonl
+Environment=TESERA_WITNESS_DIR=/mnt/backup-witness
+# Optional: Environment=TESERA_COUNTER_KEY=/etc/tesera/counter.pem
+ExecStart=/usr/local/bin/tesera witness --journal ${TESERA_JOURNAL} --witness-dir ${TESERA_WITNESS_DIR}
+# Fail loudly; the timer's OnFailure can page. Never fall back to silent skip.
+SuccessExitStatus=0
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/mnt/backup-witness %h/.tesera

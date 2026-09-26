@@ -5,7 +5,7 @@ silently, or unapproved:
 
 .. code-block:: python
 
-    from interceptor import guard
+    from tesera import guard
 
     @guard(action="billing.refund", risk="high")
     def refund(customer_id: str, amount_cents: int, api_key: str) -> dict:
@@ -18,7 +18,7 @@ never reach the journal, the prompt, or any hash.
 
 There is no service behind this. No account, no API key, no network: the
 guarantee is a local Ed25519 key and an append-only file you can verify
-offline with ``interceptor verify``.
+offline with ``tesera verify``.
 
 What the evidence proves, precisely, is in ``docs/THREAT_MODEL.md``. It is
 worth reading before relying on it — in particular, truncating the *tail* of a
@@ -75,7 +75,7 @@ from .errors import (
     EvidencePrivacyInspectionError,
     ExecutionCompletedEvidenceError,
     IdentityError,
-    InterceptorError,
+    TeseraError,
     JournalError,
     PolicyError,
     RedactionError,
@@ -193,7 +193,7 @@ def _package_version() -> str:
     try:
         from importlib.metadata import version
 
-        return version("interceptor")
+        return version("tesera")
     except Exception:  # pragma: no cover - running from a source checkout
         return _FALLBACK_VERSION
 
@@ -258,7 +258,7 @@ __all__ = [
     "FileSpendingBudgetProvider",
     "IdempotencyKeySpec",
     "IdentityError",
-    "InterceptorError",
+    "TeseraError",
     "InvocationStatus",
     "JournalError",
     "JournalStore",

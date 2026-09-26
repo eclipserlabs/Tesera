@@ -14,18 +14,18 @@ import json
 
 import pytest
 
-import interceptor as ge
+import tesera as ge
 from helpers import allow
-from interceptor.canonical import UNSUPPORTED_MARKER, canonicalize
-from interceptor.privacy import (
+from tesera.canonical import UNSUPPORTED_MARKER, canonicalize
+from tesera.privacy import (
     PrivacyClassification,
     _classify_retention,
     _classify_summary,
     inspect_journal,
     inspect_verified_snapshot,
 )
-from interceptor.redaction import SENSITIVE_NAMES, bounded_summary
-from interceptor.verification import JournalSnapshot, VerificationResult
+from tesera.redaction import SENSITIVE_NAMES, bounded_summary
+from tesera.verification import JournalSnapshot, VerificationResult
 
 
 def classify(value, sensitive: frozenset[str] = SENSITIVE_NAMES):

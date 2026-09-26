@@ -16,14 +16,14 @@ from pathlib import Path
 import pytest
 
 from helpers import allow
-from interceptor import (
+from tesera import (
     archive_journal,
     checkpoint_journal,
     countersign_journal,
     guard,
     resolve_journal,
 )
-from interceptor.identity import EphemeralSigningIdentity, generate_private_key
+from tesera.identity import EphemeralSigningIdentity, generate_private_key
 
 NODE = shutil.which("node")
 VERIFIER = Path(__file__).resolve().parent.parent / "verifiers" / "node" / "verify.mjs"
@@ -58,8 +58,8 @@ def test_node_verifies_full_journal(evidence_home, tmp_path):
     journal = evidence_home / "journal.jsonl"
     checkpoint_journal(journal)
 
-    from interceptor.audit import audit_journal
-    from interceptor.identity import load_trusted_public_keys
+    from tesera.audit import audit_journal
+    from tesera.identity import load_trusted_public_keys
 
     report = audit_journal(journal, load_trusted_public_keys(evidence_home))
     resolve_journal(journal, report.invocations[0].decision_event_id, "confirmed_completed")

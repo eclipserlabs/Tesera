@@ -5,7 +5,7 @@ registry call, no backend, no account, no network.
 
 The decorator builds a deterministic :class:`ActionContract` from the function
 and the ``@guard`` arguments at decoration time, then hands every invocation
-to the shared execution engine in :mod:`interceptor.engine` — the same
+to the shared execution engine in :mod:`tesera.engine` — the same
 engine used by ``wrap_tool``. That engine owns the ordering, fail-closed
 semantics, and evidence writes; see its module docstring for the precise flow.
 
@@ -227,7 +227,7 @@ def guard(
             )
 
         functools.update_wrapper(wrapper, target)
-        wrapper.__interceptor_contract__ = contract  # type: ignore[attr-defined]
+        wrapper.__tesera_contract__ = contract  # type: ignore[attr-defined]
         return wrapper  # type: ignore[return-value]
 
     if func is not None:

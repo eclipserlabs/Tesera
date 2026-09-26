@@ -1,6 +1,6 @@
 # Deployment guide
 
-How to run `interceptor` in production so the guarantees survive contact with
+How to run `tesera` in production so the guarantees survive contact with
 operations. Read `THREAT_MODEL.md` first — this guide implements its
 "what would strengthen it" list.
 
@@ -10,15 +10,15 @@ Preferred: systemd timers in `deploy/systemd/` (witness every 5 min, verify +
 witness-audit + audit every 15 min; any non-zero exit pages via `OnFailure`):
 
 ```sh
-sudo cp deploy/systemd/interceptor-*.service deploy/systemd/interceptor-*.timer /etc/systemd/system/
-sudo systemctl enable --now interceptor-witness.timer interceptor-verify.timer
+sudo cp deploy/systemd/tesera-*.service deploy/systemd/tesera-*.timer /etc/systemd/system/
+sudo systemctl enable --now tesera-witness.timer tesera-verify.timer
 ```
 
 Cron equivalent (when systemd is unavailable):
 
 ```cron
-*/5 * * * * interceptor witness --witness-dir /mnt/backup-witness >>/var/log/interceptor-witness.log 2>&1
-0   * * * * interceptor verify --checkpoint /mnt/backup-witness/latest.checkpoint || page-oncall
+*/5 * * * * tesera witness --witness-dir /mnt/backup-witness >>/var/log/tesera-witness.log 2>&1
+0   * * * * tesera verify --checkpoint /mnt/backup-witness/latest.checkpoint || page-oncall
 ```
 
 Rules: the witness dir must live where the journal cannot reach (separate
@@ -30,7 +30,7 @@ directory (not just `latest`) on its own schedule — every shipped witness must
 stay covered:
 
 ```cron
-*/15 * * * * interceptor witness-audit --witness-dir /mnt/backup-witness || page-oncall
+*/15 * * * * tesera witness-audit --witness-dir /mnt/backup-witness || page-oncall
 ```
 
 For AWS, the blessed remote is an Object-Locked bucket (Compliance mode, so
@@ -55,8 +55,8 @@ the cron interval; alerting stays on `verify`/`witness-audit`, the provider
 is the backstop:
 
 ```python
-from interceptor import WitnessFreshnessProvider
-from interceptor.policy import AllOf
+from tesera import WitnessFreshnessProvider
+from tesera.policy import AllOf
 
 policy = AllOf(
     [
@@ -72,17 +72,17 @@ policy = AllOf(
 
 ## 2. Rotate keys and journals
 
-- **Signing keys**: `interceptor key-rotate --journal <live>` quarterly or on
+- **Signing keys**: `tesera key-rotate --journal <live>` quarterly or on
   any suspected exposure. The rotation record is witnessed in-chain; keep old
   public keys in `trusted_keys/` and pin the current fingerprint out of band.
-- **Journals**: `interceptor archive --keep 12` when files approach ~100k
+- **Journals**: `tesera archive --keep 12` when files approach ~100k
   events (see `PERFORMANCE.md`). Keep every predecessor the live chain links
   to — `--keep` deletion destroys evidence. Verify custody end-to-end with
-  `interceptor verify-chain`.
+  `tesera verify-chain`.
 
 ## 3. Approve with identity
 
-Export the on-call identity where agents run (`INTERCEPTOR_APPROVER`, ideally
+Export the on-call identity where agents run (`TESERA_APPROVER`, ideally
 an OIDC `sub` your launcher provides) and wrap approval in
 `AttestedApprovalProvider` + `QuorumApprovalProvider` for high-risk actions.
 The journal then records *who* approved, and `audit` shows it.
@@ -95,7 +95,7 @@ but `matched`:
 
 ```python
 import stripe
-from interceptor import StripeRefundFetcher, reconcile_journal
+from tesera import StripeRefundFetcher, reconcile_journal
 
 stripe.api_key = os.environ["STRIPE_API_KEY"]  # network happens in your app, never in this lib
 
@@ -123,7 +123,7 @@ AWS equivalent: write the same 20-line fetcher over CloudTrail
   bounds, only historical depth is lost (one directory per journal; never mix
   journals in one witness dir or pruning cannot stay per-journal):
   ```cron
-  0 3 1 * * interceptor witness-prune --witness-dir /mnt/backup-witness --keep 2000
+  0 3 1 * * tesera witness-prune --witness-dir /mnt/backup-witness --keep 2000
   ```
   If erasure is required (GDPR), purge only after `inspect`
   confirms full redaction, and record the purge itself out-of-band — a gap in

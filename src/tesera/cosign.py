@@ -6,7 +6,7 @@ bar to *two* keys held by *two* parties — typically the operator's local key
 plus a manager's, auditor's, or automated witness's key kept elsewhere.
 
 Flow: the operator runs ``checkpoint`` as usual, then a second party runs
-``interceptor countersign --signing-key counter.pem``. That appends a
+``tesera countersign --signing-key counter.pem``. That appends a
 countersignature event (signed by the counter key, hash-chained like every
 other event) committing to the newest checkpoint's ``(count, head)``. Forging
 history afterwards requires both keys.
@@ -61,7 +61,7 @@ def countersign_journal(
     journal = Path(path)
     checkpoint = _newest_checkpoint(journal)
     if checkpoint is None:
-        raise CountersignError(f"no checkpoint in {journal}; run `interceptor checkpoint` first")
+        raise CountersignError(f"no checkpoint in {journal}; run `tesera checkpoint` first")
     try:
         signer = EphemeralSigningIdentity.from_file(Path(signing_key), password)
     except Exception as exc:

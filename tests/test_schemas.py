@@ -5,7 +5,7 @@ from __future__ import annotations
 import dataclasses
 from typing import Optional, Union
 
-from interceptor.schemas import as_openai_tool, describe_tool
+from tesera.schemas import as_openai_tool, describe_tool
 
 
 @dataclasses.dataclass

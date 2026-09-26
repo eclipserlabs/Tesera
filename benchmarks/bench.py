@@ -19,9 +19,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
-from interceptor import guard, verify_journal  # noqa: E402
-from interceptor.approval import ApprovalDecision  # noqa: E402
-from interceptor.identity import EphemeralSigningIdentity  # noqa: E402
+from tesera import guard, verify_journal  # noqa: E402
+from tesera.approval import ApprovalDecision  # noqa: E402
+from tesera.identity import EphemeralSigningIdentity  # noqa: E402
 
 
 class AllowNow:
@@ -31,7 +31,7 @@ class AllowNow:
 
 def bench(calls: int) -> dict[str, float]:
     tmp = Path(tempfile.mkdtemp(prefix="bench-"))
-    os.environ["INTERCEPTOR_EVIDENCE_HOME"] = str(tmp / "home")
+    os.environ["TESERA_EVIDENCE_HOME"] = str(tmp / "home")
     journal = tmp / "journal.jsonl"
     identity = EphemeralSigningIdentity.generate()
     home = tmp / "home"

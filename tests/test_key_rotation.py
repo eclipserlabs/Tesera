@@ -11,15 +11,15 @@ from __future__ import annotations
 import json
 
 from helpers import allow
-from interceptor import (
+from tesera import (
     audit_journal,
     checkpoint_journal,
     guard,
     inspect_journal,
     verify_journal,
 )
-from interceptor.cli import EXIT_FAILURE, EXIT_OK, main
-from interceptor.identity import (
+from tesera.cli import EXIT_FAILURE, EXIT_OK, main
+from tesera.identity import (
     LocalSigningIdentity,
     key_id_for,
     load_public_key,
@@ -196,7 +196,7 @@ def test_verify_ignores_unrelated_keys_but_accepts_the_signing_generations(
 
     other_home = tmp_path / "other-home"
     other_home.mkdir()
-    monkeypatch.setenv("INTERCEPTOR_EVIDENCE_HOME", str(other_home))
+    monkeypatch.setenv("TESERA_EVIDENCE_HOME", str(other_home))
     other = LocalSigningIdentity.load_or_create()
 
     # The unrelated key alone proves nothing about this journal.
@@ -216,7 +216,7 @@ def test_rotation_records_are_not_silently_trusted(evidence_home, monkeypatch, t
     record(evidence_home)
     other_home = tmp_path / "other-home"
     other_home.mkdir()
-    monkeypatch.setenv("INTERCEPTOR_EVIDENCE_HOME", str(other_home))
+    monkeypatch.setenv("TESERA_EVIDENCE_HOME", str(other_home))
     other = LocalSigningIdentity.load_or_create()
 
     forged = json.loads((evidence_home / "journal.jsonl").read_text().splitlines()[0])

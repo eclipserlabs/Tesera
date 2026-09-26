@@ -1,6 +1,6 @@
 [Unit]
-Description=interceptor witness prune monthly (bounded retention)
-Documentation=https://github.com/wiramahendra/guardrail-evidence/blob/main/docs/DEPLOYMENT.md
+Description=tesera witness prune monthly (bounded retention)
+Documentation=https://github.com/eclipserlabs/tesera/blob/main/docs/DEPLOYMENT.md
 
 [Timer]
 # Matches DEPLOYMENT.md retention: monthly, keep newest 2000 (~7 days of
@@ -9,7 +9,7 @@ Documentation=https://github.com/wiramahendra/guardrail-evidence/blob/main/docs/
 OnCalendar=monthly
 Persistent=true
 RandomizedDelaySec=3600
-Unit=interceptor-witness-prune.service
+Unit=tesera-witness-prune.service
 
 [Install]
 WantedBy=timers.target

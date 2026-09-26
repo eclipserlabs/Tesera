@@ -12,11 +12,11 @@ from pathlib import Path
 
 import pytest
 
-import interceptor.journal as journal_module
+import tesera.journal as journal_module
 from helpers import allow, deny
-from interceptor import guard
-from interceptor.errors import DuplicateActionError
-from interceptor.journal import (
+from tesera import guard
+from tesera.errors import DuplicateActionError
+from tesera.journal import (
     _IDEM_TABLES_CACHE,
     FileJournal,
     _idem_cache_key,
@@ -107,7 +107,7 @@ def test_index_matches_scan_at_every_step(
     check("after failure (retry must stay allowed)")
     assert find_blocking_idempotent_decision(journal, "idx.fail", "f") is None
 
-    from interceptor.errors import ActionDenied
+    from tesera.errors import ActionDenied
 
     with pytest.raises(ActionDenied):
         denied("d")
@@ -209,10 +209,10 @@ def _mp_race_worker(journal_str: str, home_str: str, gate, results) -> None:
     try:
         import os
 
-        os.environ["INTERCEPTOR_EVIDENCE_HOME"] = home_str
+        os.environ["TESERA_EVIDENCE_HOME"] = home_str
         from helpers import allow
-        from interceptor import guard
-        from interceptor.errors import DuplicateActionError
+        from tesera import guard
+        from tesera.errors import DuplicateActionError
 
         assert gate.wait(timeout=120)
 
@@ -241,8 +241,8 @@ def _mp_race_worker(journal_str: str, home_str: str, gate, results) -> None:
 def test_multiprocess_same_key_executes_once(tmp_path: Path, evidence_home: Path):
     import multiprocessing as mp
 
-    from interceptor.identity import LocalSigningIdentity
-    from interceptor.verification import verify_journal
+    from tesera.identity import LocalSigningIdentity
+    from tesera.verification import verify_journal
 
     LocalSigningIdentity.load_or_create()  # pre-create: children only load
     journal = tmp_path / "j.jsonl"
@@ -263,7 +263,7 @@ def test_multiprocess_same_key_executes_once(tmp_path: Path, evidence_home: Path
     assert outcomes.count("executed") == 1, outcomes
     assert outcomes.count("duplicate") == 3, outcomes
 
-    from interceptor.identity import load_trusted_public_keys
+    from tesera.identity import load_trusted_public_keys
 
     keys = load_trusted_public_keys(evidence_home)
     assert verify_journal(journal, keys).valid
@@ -273,7 +273,7 @@ def test_multiprocess_same_key_executes_once(tmp_path: Path, evidence_home: Path
 
 
 def test_completed_file_set_is_fifo_capped(tmp_path: Path):
-    from interceptor.engine import (
+    from tesera.engine import (
         _COMPLETED_FILE,
         _COMPLETED_FILE_MAX,
         _is_completed,
@@ -289,7 +289,7 @@ def test_completed_file_set_is_fifo_capped(tmp_path: Path):
 
 
 def test_evicted_file_key_still_blocked_by_journal(tmp_path: Path):
-    from interceptor.engine import _COMPLETED_FILE_MAX, _mark_completed
+    from tesera.engine import _COMPLETED_FILE_MAX, _mark_completed
 
     journal = tmp_path / "j.jsonl"
 
@@ -307,7 +307,7 @@ def test_evicted_file_key_still_blocked_by_journal(tmp_path: Path):
 
 
 def test_custom_store_completions_are_not_capped():
-    from interceptor.engine import _COMPLETED_CUSTOM, _is_completed, _mark_completed
+    from tesera.engine import _COMPLETED_CUSTOM, _is_completed, _mark_completed
 
     class MemoryStore:
         @property
@@ -327,7 +327,7 @@ def test_custom_store_completions_are_not_capped():
 def test_custom_store_completions_purged_on_collection():
     import gc
 
-    from interceptor.engine import _COMPLETED_CUSTOM, _is_completed, _mark_completed
+    from tesera.engine import _COMPLETED_CUSTOM, _is_completed, _mark_completed
 
     class MemoryStore:
         @property
@@ -350,9 +350,9 @@ def test_custom_store_completions_purged_on_collection():
 def test_custom_store_guard_flow_and_collection():
     import gc
 
-    from interceptor import guard
-    from interceptor.engine import _COMPLETED_CUSTOM
-    from interceptor.errors import DuplicateActionError
+    from tesera import guard
+    from tesera.engine import _COMPLETED_CUSTOM
+    from tesera.errors import DuplicateActionError
 
     class MemoryStore:
         def __init__(self) -> None:

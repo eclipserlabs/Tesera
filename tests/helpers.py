@@ -8,8 +8,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from interceptor.approval import ApprovalDecision, ApprovalRequest
-from interceptor.contracts import ActionContract
+from tesera.approval import ApprovalDecision, ApprovalRequest
+from tesera.contracts import ActionContract
 
 
 @dataclass

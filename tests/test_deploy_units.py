@@ -1,6 +1,6 @@
 """Deployed systemd units must stay valid: dead units page nobody.
 
-Every ``interceptor <subcommand> --flag`` token in an ExecStart line is
+Every ``tesera <subcommand> --flag`` token in an ExecStart line is
 checked against the real CLI parser, and every timer is linked to a service
 that exists. A typo'd flag would otherwise fail silently at 3am instead of
 in CI.
@@ -12,11 +12,11 @@ import configparser
 import re
 from pathlib import Path
 
-from interceptor.cli import build_parser
+from tesera.cli import build_parser
 
 UNITS = Path(__file__).resolve().parent.parent / "deploy" / "systemd"
 
-COMMAND_RE = re.compile(r"interceptor\s+([a-z][a-z-]*)")
+COMMAND_RE = re.compile(r"tesera\s+([a-z][a-z-]*)")
 FLAG_RE = re.compile(r"--[a-z][a-z-]*")
 
 
@@ -44,7 +44,7 @@ def test_services_reference_real_commands_and_flags():
         assert config["Service"]["Type"] == "oneshot", unit.name
         line = config["Service"]["ExecStart"]
         matches = list(COMMAND_RE.finditer(line))
-        assert matches, f"{unit.name} invokes no interceptor command"
+        assert matches, f"{unit.name} invokes no tesera command"
         for index, match in enumerate(matches):
             subcommand = match.group(1)
             assert subcommand in choices, f"{unit.name}: unknown subcommand {subcommand}"

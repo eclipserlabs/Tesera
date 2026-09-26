@@ -1,0 +1,19 @@
+[Unit]
+Description=tesera: verify journal covers latest witness + audit for reconciliation
+Documentation=https://github.com/eclipserlabs/tesera/blob/main/docs/DEPLOYMENT.md
+
+[Service]
+Type=oneshot
+User=tesera
+Group=tesera
+Environment=TESERA_JOURNAL=%h/.tesera/journal.jsonl
+Environment=TESERA_WITNESS_DIR=/mnt/backup-witness
+# Fails (non-zero) on: bad chain, uncovered witness, failed/needs_reconciliation
+# invocations. Wire OnFailure to your pager.
+ExecStart=/bin/sh -c '/usr/local/bin/tesera verify --journal ${TESERA_JOURNAL} --checkpoint ${TESERA_WITNESS_DIR}/latest.checkpoint && /usr/local/bin/tesera witness-audit --journal ${TESERA_JOURNAL} --witness-dir ${TESERA_WITNESS_DIR} && /usr/local/bin/tesera audit --journal ${TESERA_JOURNAL}'
+SuccessExitStatus=0
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=%h/.tesera /mnt/backup-witness

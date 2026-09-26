@@ -10,22 +10,22 @@ from pathlib import Path
 
 import pytest
 
-import interceptor as ge
+import tesera as ge
 from helpers import allow
-from interceptor import guard
-from interceptor.canonical import (
+from tesera import guard
+from tesera.canonical import (
     REDACTED,
     canonical_json_bytes,
     canonicalize,
     sha256_hex,
 )
-from interceptor.identity import LocalSigningIdentity, load_public_key
-from interceptor.journal import (
+from tesera.identity import LocalSigningIdentity, load_public_key
+from tesera.journal import (
     _read_last_event_hash,
     _read_last_event_hash_scan,
 )
-from interceptor.redaction import build_sensitive_set
-from interceptor.verification import verify_journal
+from tesera.redaction import build_sensitive_set
+from tesera.verification import verify_journal
 
 
 def make_journal(home: Path, count: int) -> Path:
@@ -178,7 +178,7 @@ def test_backward_tail_read_matches_forward_scan(evidence_home):
 
 
 def test_tail_read_handles_a_line_longer_than_the_window(evidence_home, monkeypatch):
-    monkeypatch.setattr("interceptor.journal._TAIL_READ_BYTES", 8)
+    monkeypatch.setattr("tesera.journal._TAIL_READ_BYTES", 8)
     path = make_journal(evidence_home, 3)
 
     with open(path, "a+b") as handle:

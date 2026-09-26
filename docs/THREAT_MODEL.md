@@ -15,7 +15,7 @@ who produced it.
 The guarantees hold only while all of these do:
 
 1. **The signing key is secret.** It lives at
-   `~/.interceptor/signing_key.pem`, mode `0600`, unencrypted. Anyone
+   `~/.tesera/signing_key.pem`, mode `0600`, unencrypted. Anyone
    who can read that file can forge an entire journal that verifies.
 2. **The verifier has an authentic public key.** Verification proves a chain
    was signed by whoever holds the private half of the key you supply. If the
@@ -80,7 +80,7 @@ remote as they are written, would detect even re-signing truncation. The
 `ActionObserver` hook is not that — it sees contracts, not events.
 `FanoutJournalStore` + `FileMirrorSink` ship every event to witness sinks as
 written (fail-closed by default; a ship failure raises `EventShipError`
-without silently dropping the witness), and `interceptor witness` checkpoints
+without silently dropping the witness), and `tesera witness` checkpoints
 and ships the witness off-host in one cron-ready command. Operating the remote
 end — a second disk, a WORM bucket, a second host — remains yours; see
 `docs/DEPLOYMENT.md`. The `countersign` command is a partial answer: a second
@@ -148,7 +148,7 @@ Redaction is name-based, plus a narrow set of high-precision value patterns
 regexes via `redact_patterns`). A secret passed as `data` or `payload` that
 matches no pattern is not redacted, because nothing marks it as sensitive.
 Use `redact=[...]` and `redact_patterns=[...]`, and use
-`interceptor inspect` to see what a journal would actually disclose
+`tesera inspect` to see what a journal would actually disclose
 before sharing it.
 
 Name-based redaction also cannot help with a secret embedded inside a larger

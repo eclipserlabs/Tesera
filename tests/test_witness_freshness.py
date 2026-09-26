@@ -9,10 +9,10 @@ from pathlib import Path
 import pytest
 
 from helpers import allow
-from interceptor import WitnessFreshnessProvider, guard
-from interceptor.approval import ApprovalRequest
-from interceptor.errors import ActionDenied
-from interceptor.policy import AllOf
+from tesera import WitnessFreshnessProvider, guard
+from tesera.approval import ApprovalRequest
+from tesera.errors import ActionDenied
+from tesera.policy import AllOf
 
 
 def _req(risk: str = "high") -> ApprovalRequest:

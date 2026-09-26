@@ -7,7 +7,7 @@ import json
 import pytest
 
 from helpers import allow, deny
-from interceptor import (
+from tesera import (
     AttestedApprovalProvider,
     CallbackSigningIdentity,
     FileSpendingBudgetProvider,
@@ -20,15 +20,15 @@ from interceptor import (
     verify_journal,
     wrap_tool,
 )
-from interceptor.approval import ApprovalRequest
-from interceptor.errors import (
+from tesera.approval import ApprovalRequest
+from tesera.errors import (
     ActionDenied,
     ContractError,
     IdentityError,
     SigningError,
     ToolWrapError,
 )
-from interceptor.identity import (
+from tesera.identity import (
     EphemeralSigningIdentity,
     LocalSigningIdentity,
     load_trusted_public_keys,
@@ -44,7 +44,7 @@ def _req(spend=None, action="spend.act") -> ApprovalRequest:
 
 def test_callback_identity_guards_and_verifies(tmp_path, monkeypatch):
     home = tmp_path / "home"
-    monkeypatch.setenv("INTERCEPTOR_EVIDENCE_HOME", str(home))
+    monkeypatch.setenv("TESERA_EVIDENCE_HOME", str(home))
     real = LocalSigningIdentity.load_or_create()
     journal = home / "journal.jsonl"
 
@@ -64,7 +64,7 @@ def test_callback_identity_guards_and_verifies(tmp_path, monkeypatch):
 
 def test_callback_identity_sign_failure_fails_closed(tmp_path, monkeypatch):
     home = tmp_path / "home"
-    monkeypatch.setenv("INTERCEPTOR_EVIDENCE_HOME", str(home))
+    monkeypatch.setenv("TESERA_EVIDENCE_HOME", str(home))
     real = LocalSigningIdentity.load_or_create()
     journal = home / "journal.jsonl"
 
@@ -83,7 +83,7 @@ def test_callback_identity_sign_failure_fails_closed(tmp_path, monkeypatch):
 
 def test_callback_identity_rejects_non_string_signature(tmp_path, monkeypatch):
     home = tmp_path / "home"
-    monkeypatch.setenv("INTERCEPTOR_EVIDENCE_HOME", str(home))
+    monkeypatch.setenv("TESERA_EVIDENCE_HOME", str(home))
     real = LocalSigningIdentity.load_or_create()
     ext = CallbackSigningIdentity(real.public_key(), lambda digest: 42)
     with pytest.raises(SigningError):
@@ -111,7 +111,7 @@ def test_encrypted_key_roundtrip(tmp_path):
 def test_rotate_with_provisioned_successor(evidence_home):
     from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
-    from interceptor.identity import key_id_for, load_trusted_public_keys
+    from tesera.identity import key_id_for, load_trusted_public_keys
 
     journal = evidence_home / "journal.jsonl"
 
@@ -128,8 +128,8 @@ def test_rotate_with_provisioned_successor(evidence_home):
 
 
 def test_keygen_and_countersign_with_password_env(tmp_path, monkeypatch, evidence_home):
-    from interceptor import checkpoint_journal
-    from interceptor.cli import EXIT_OK, main
+    from tesera import checkpoint_journal
+    from tesera.cli import EXIT_OK, main
 
     journal = evidence_home / "journal.jsonl"
 
@@ -140,9 +140,9 @@ def test_keygen_and_countersign_with_password_env(tmp_path, monkeypatch, evidenc
     act(1)
     checkpoint_journal(journal)
     counter = tmp_path / "counter.pem"
-    monkeypatch.setenv("INTERCEPTOR_COUNTER_PW", "hunter3")
+    monkeypatch.setenv("TESERA_COUNTER_PW", "hunter3")
     assert (
-        main(["keygen", "--output", str(counter), "--password-env", "INTERCEPTOR_COUNTER_PW"])
+        main(["keygen", "--output", str(counter), "--password-env", "TESERA_COUNTER_PW"])
         == EXIT_OK
     )
     assert (
@@ -154,7 +154,7 @@ def test_keygen_and_countersign_with_password_env(tmp_path, monkeypatch, evidenc
                 "--signing-key",
                 str(counter),
                 "--password-env",
-                "INTERCEPTOR_COUNTER_PW",
+                "TESERA_COUNTER_PW",
             ]
         )
         == EXIT_OK
@@ -164,8 +164,8 @@ def test_keygen_and_countersign_with_password_env(tmp_path, monkeypatch, evidenc
 
 
 def test_countersign_missing_password_env_fails(tmp_path, evidence_home, capsys):
-    from interceptor import checkpoint_journal
-    from interceptor.cli import EXIT_FAILURE, main
+    from tesera import checkpoint_journal
+    from tesera.cli import EXIT_FAILURE, main
 
     journal = evidence_home / "journal.jsonl"
 
@@ -175,7 +175,7 @@ def test_countersign_missing_password_env_fails(tmp_path, evidence_home, capsys)
 
     act(1)
     checkpoint_journal(journal)
-    from interceptor.cli import EXIT_OK
+    from tesera.cli import EXIT_OK
 
     assert main(["keygen", "--output", str(tmp_path / "c.pem")]) == EXIT_OK
     capsys.readouterr()
@@ -189,7 +189,7 @@ def test_countersign_missing_password_env_fails(tmp_path, evidence_home, capsys)
                 "--signing-key",
                 str(tmp_path / "c.pem"),
                 "--password-env",
-                "INTERCEPTOR_DEFINITELY_UNSET",
+                "TESERA_DEFINITELY_UNSET",
             ]
         )
         == EXIT_FAILURE
@@ -314,7 +314,7 @@ def test_file_spending_budget_restart_and_corrupt(tmp_path):
 
 
 def test_spend_budget_guards_real_call(evidence_home):
-    from interceptor.policy import AllOf
+    from tesera.policy import AllOf
 
     journal = evidence_home / "journal.jsonl"
     policy = AllOf([SpendingBudgetProvider(100), allow()])
@@ -337,7 +337,7 @@ def test_spend_budget_guards_real_call(evidence_home):
 
 
 def test_attested_stamps_allowed_and_passes_denied(monkeypatch):
-    monkeypatch.delenv("INTERCEPTOR_APPROVER", raising=False)
+    monkeypatch.delenv("TESERA_APPROVER", raising=False)
     provider = AttestedApprovalProvider(allow(), approved_by="oncall:ana")
     decision = provider.decide(_req())
     assert decision.allowed and decision.approved_by == "oncall:ana"
@@ -345,13 +345,13 @@ def test_attested_stamps_allowed_and_passes_denied(monkeypatch):
 
 
 def test_attested_reads_env_and_rejects_missing_or_malformed(monkeypatch):
-    monkeypatch.setenv("INTERCEPTOR_APPROVER", "ops:bob")
+    monkeypatch.setenv("TESERA_APPROVER", "ops:bob")
     assert AttestedApprovalProvider(allow()).decide(_req()).approved_by == "ops:bob"
-    monkeypatch.delenv("INTERCEPTOR_APPROVER", raising=False)
+    monkeypatch.delenv("TESERA_APPROVER", raising=False)
     assert not AttestedApprovalProvider(allow()).decide(_req()).allowed
-    monkeypatch.setenv("INTERCEPTOR_APPROVER", "  Jane   Doe  ")
+    monkeypatch.setenv("TESERA_APPROVER", "  Jane   Doe  ")
     assert AttestedApprovalProvider(allow()).decide(_req()).approved_by == "Jane Doe"
-    monkeypatch.setenv("INTERCEPTOR_APPROVER", "has\ttab")
+    monkeypatch.setenv("TESERA_APPROVER", "has\ttab")
     assert AttestedApprovalProvider(allow()).decide(_req()).approved_by == "has tab"
     assert not AttestedApprovalProvider(allow(), approved_by="x" * 121).decide(_req()).allowed
     assert not AttestedApprovalProvider(allow(), approved_by="bad\x01id").decide(_req()).allowed

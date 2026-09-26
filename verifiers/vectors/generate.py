@@ -27,7 +27,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from cryptography.hazmat.primitives import serialization  # noqa: E402
 
-from interceptor import (  # noqa: E402
+from tesera import (  # noqa: E402
     archive_journal,
     audit_journal,
     checkpoint_journal,
@@ -36,8 +36,8 @@ from interceptor import (  # noqa: E402
     resolve_journal,
     verify_journal,
 )
-from interceptor.errors import ActionDenied, DuplicateActionError  # noqa: E402
-from interceptor.identity import (  # noqa: E402
+from tesera.errors import ActionDenied, DuplicateActionError  # noqa: E402
+from tesera.identity import (  # noqa: E402
     EphemeralSigningIdentity,
     LocalSigningIdentity,
     key_id_for,
@@ -59,12 +59,12 @@ def _freeze_time_and_ids() -> None:
     import itertools
     from datetime import datetime, timezone
 
-    import interceptor.archive as _archive
-    import interceptor.checkpoint as _checkpoint
-    import interceptor.cosign as _cosign
-    import interceptor.engine as _engine
-    import interceptor.journal as _journal
-    import interceptor.resolve as _resolve
+    import tesera.archive as _archive
+    import tesera.checkpoint as _checkpoint
+    import tesera.cosign as _cosign
+    import tesera.engine as _engine
+    import tesera.journal as _journal
+    import tesera.resolve as _resolve
 
     counter = itertools.count(1)
 
@@ -118,7 +118,7 @@ def _seed_home(name: str) -> Path:
     (home / "verify_key.pem").write_bytes(pub_pem)
     trusted = home / "trusted_keys"
     trusted.mkdir(exist_ok=True)
-    from interceptor.identity import public_key_fingerprint
+    from tesera.identity import public_key_fingerprint
 
     (trusted / f"{public_key_fingerprint(public)}.pem").write_bytes(pub_pem)
     return home
@@ -155,9 +155,9 @@ def _write_seed_key(path: Path, seed: str) -> None:
 
 def _new_home() -> Path:
     tmp = Path(tempfile.mkdtemp(prefix="vector-home-"))
-    os.environ["INTERCEPTOR_EVIDENCE_HOME"] = str(tmp)
-    from interceptor.engine import reset_idempotency_state
-    from interceptor.observer import reset_notifications
+    os.environ["TESERA_EVIDENCE_HOME"] = str(tmp)
+    from tesera.engine import reset_idempotency_state
+    from tesera.observer import reset_notifications
 
     reset_notifications()
     reset_idempotency_state()

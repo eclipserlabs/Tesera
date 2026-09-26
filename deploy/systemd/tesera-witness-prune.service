@@ -1,0 +1,19 @@
+[Unit]
+Description=tesera: prune oldest shipped witnesses, keeping the newest N
+Documentation=https://github.com/eclipserlabs/tesera/blob/main/docs/DEPLOYMENT.md
+
+[Service]
+Type=oneshot
+User=tesera
+Group=tesera
+# Keeping the newest witnesses preserves the strongest truncation bounds;
+# only historical depth is lost. One witness dir per journal.
+Environment=TESERA_WITNESS_DIR=/mnt/backup-witness
+Environment=TESERA_WITNESS_KEEP=2000
+ExecStart=/usr/local/bin/tesera witness-prune --witness-dir ${TESERA_WITNESS_DIR} --keep ${TESERA_WITNESS_KEEP}
+SuccessExitStatus=0
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/mnt/backup-witness

@@ -1,14 +1,14 @@
 # Tessera — Project Map (Phase 0)
 
 > Mapping only. No refactors, no fixes, no features. Generated 2026-09-25 from a clean checkout (`0ade674`).
-> Rename note: working directory is `tessera`; code, package, and docs still say `interceptor` / `interceptor-effect`. Nothing has been renamed yet.
+> Rename note: working directory is `tessera`; code, package, and docs still say `tesera` / `tesera-effect`. Nothing has been renamed yet.
 
 ## 1. Full file tree (condensed)
 
 ```
 pyproject.toml  uv.lock  CHANGELOG.md  LICENSE (MIT, (c) 2026 Wira Mahendra)
 README.md  SECURITY.md  .python-version  .github/workflows/ci.yml
-src/interceptor/ (29 modules):
+src/tesera/ (29 modules):
   __init__.py  approval.py  approve_server.py  archive.py  audit.py
   canonical.py  checkpoint.py  cli.py  contracts.py  cosign.py
   engine.py  errors.py  export.py  gateway.py  guard.py
@@ -18,13 +18,13 @@ src/interceptor/ (29 modules):
 tests/ (30 files): conftest.py helpers.py
   test_audit.py test_audit_streaming.py test_checkpoint.py test_cli.py
   test_deploy_units.py test_evidence.py test_guard.py test_hardening.py
-  test_idem_index.py test_interceptor_features.py test_key_rotation.py
+  test_idem_index.py test_tesera_features.py test_key_rotation.py
   test_maturity.py test_next_batch.py test_node_verifier.py test_privacy.py
   test_redaction_homoglyphs.py test_redaction_property.py test_redaction_traversal.py
   test_review_batch.py test_round3.py test_schemas.py test_ts_interop.py
   test_vectors.py test_witness_freshness.py test_witness_prune.py
   test_witness_reconcile.py test_wrap_tool.py
-ts/ (package `interceptor-effect` 0.2.0, Effect, Node 20):
+ts/ (package `tesera-effect` 0.2.0, Effect, Node 20):
   src/: Canonical.ts Checkpoint.ts Custody.ts Guard.ts Idempotency.ts
        Identity.ts Journal.ts Lock.ts Policy.ts Redaction.ts Schemas.ts
        Verify.ts Witness.ts index.ts
@@ -75,8 +75,8 @@ Full contract: `docs/EVIDENCE_FORMAT.md` (v1, `schema_version: "1"`). Summary:
 | TS `vitest` (`ts/`, Node 20) | **56 passed / 9 files** (incl. 10-fiber exactly-once race, 4-process appends, vector conformance) |
 | Vectors subset (`test_ts_interop + test_vectors + test_node_verifier`) | **24 passed** |
 | `ruff check .` | clean |
-| `mypy` (local `.venv`) | **broken harness, not code**: `.venv/bin/mypy` shebang points at deleted `/Users/wira/Documents/guardrail-evidence/.venv/bin/python`. CI runs `uv run --frozen mypy` (strict) — re-run there. |
-| `uv run pytest` (fresh sync path) | fails at conftest import (`No module named 'interceptor'`) — use `.venv/bin/python -m pytest` or `uv run --frozen pytest` after `uv sync --frozen` as CI does. |
+| `mypy` (local `.venv`) | **broken harness, not code**: `.venv/bin/mypy` shebang points at a deleted path from before the rename (see CHANGELOG). CI runs `uv run --frozen mypy` (strict) — re-run there. |
+| `uv run pytest` (fresh sync path) | fails at conftest import (`No module named 'tesera'`) — use `.venv/bin/python -m pytest` or `uv run --frozen pytest` after `uv sync --frozen` as CI does. |
 
 No flaky tests observed in a single run. Property-based tests exist for redaction (`test_redaction_property.py`, Hypothesis) and evidence chain tampering/replay/truncation via vectors + `test_evidence.py`/`test_hardening.py`. No dedicated refund-failure simulator; no adversarial tenant/replay/forge suite for a service (nothing to attack yet).
 
@@ -98,8 +98,8 @@ No flaky tests observed in a single run. Property-based tests exist for redactio
 
 ## 7. Package metadata / branding defects (prioritized)
 
-1. **Repo rename not applied (P0).** `pyproject.toml` urls still `github.com/wiramahendra/guardrail-evidence`; README badges/clone still `github.com/rapture-fx/interceptor`; package `interceptor` collides with an unrelated PyPI name (README tells users to install from source). Nothing says `tessera` yet. Decide: new PyPI name + repo URL + `docs/` links in one commit.
-2. **Stale local toolchain path (P1).** `.venv/bin/mypy` shebang references deleted `guardrail-evidence/.venv`; `uv run pytest` without frozen sync mis-resolves imports. CI (`uv sync --frozen` → `uv run --frozen …`) is correct; local `.venv` needs recreation after the rename.
+1. **Repo rename applied (was P0, now done).** `pyproject.toml` urls, README badges/clone, and the PyPI package name were inconsistent before the rename (see CHANGELOG rename entry); they now point at the confirmed names in one commit.
+2. **Stale local toolchain path (P1).** `.venv/bin/mypy` shebang referenced a deleted pre-rename path; `uv run pytest` without frozen sync mis-resolves imports. CI (`uv sync --frozen` → `uv run --frozen …`) is correct; local `.venv` needs recreation after the rename.
 3. **Version source vs checkout (P1).** Source checkouts report `0.0.0+unknown`; release is `0.2.0`. Documented in CHANGELOG but still surprises `pip install -e .` users and any version-gated wire protocol later.
 4. **TS positional-secret caveat (P1).** `parameterNames` must be supplied or positional secrets miss name redaction. Documented in `ts/README.md`; one missed call-site = disclosure. Needs a conformance test that fails closed.
 5. **Trusted-key set is local state, not authentication (P2).** Rotation bounds future forgery but the `trusted_keys/` dir authenticates nothing by itself; out-of-band `--public-key` pinning is required. Correct per THREAT_MODEL, but every future ingestion endpoint must re-state it or a tenant will misconfigure.

@@ -20,7 +20,7 @@ from .errors import EvidenceAuditError
 from .journal import utc_timestamp
 from .verification import JournalSnapshot, PublicKeys, load_journal_snapshot
 
-EVIDENCE_PACK_FORMAT = "interceptor-evidence-pack/1"
+EVIDENCE_PACK_FORMAT = "tesera-evidence-pack/1"
 
 
 def export_journal(path: Path, public_keys: PublicKeys) -> dict[str, Any]:

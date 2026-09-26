@@ -1,6 +1,6 @@
 """Which names count as sensitive, and how redacted evidence is summarised.
 
-The redaction *traversal* lives in :mod:`interceptor.canonical`, fused
+The redaction *traversal* lives in :mod:`tesera.canonical`, fused
 with canonicalization so the two cannot disagree about which container types
 expand into named fields. This module owns the policy — the name set — and the
 presentation helpers that run on already-redacted structures.
@@ -23,7 +23,7 @@ from .canonical import REDACTED, fold_name
 from .errors import ContractError
 
 #: Built-in sensitive names, lowercase. Matching is case-insensitive and
-#: confusable-insensitive (see :func:`interceptor.canonical.fold_name`).
+#: confusable-insensitive (see :func:`tesera.canonical.fold_name`).
 SENSITIVE_NAMES: frozenset[str] = frozenset(
     {
         "access_token",
@@ -145,7 +145,7 @@ def scrub_text(
     Longer values are substituted first: replacing a short value that happens
     to be a substring of a longer one would otherwise fragment the longer one
     and leave parts of it in the text. Values shorter than
-    :data:`interceptor.canonical._MIN_SCRUBBABLE_LENGTH` are skipped: they
+    :data:`tesera.canonical._MIN_SCRUBBABLE_LENGTH` are skipped: they
     produce far more spurious replacements than useful scrubbing.
     """
     from .canonical import _MIN_SCRUBBABLE_LENGTH

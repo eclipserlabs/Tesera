@@ -9,7 +9,7 @@ Scope this honestly: it is loopback/LAN on-call tooling, not a hardened web
 service. The page URL carries a bearer token (keep it out of chat, logs, and
 history — anyone holding it can approve), there is no TLS, and the default
 attribution is ``"web"``. For attributable approvals, compose with
-:class:`interceptor.policy.AttestedApprovalProvider` and treat the URL like a
+:class:`tesera.policy.AttestedApprovalProvider` and treat the URL like a
 password. Each pending request additionally carries a single-use decision
 token so a forged cross-site POST without the page cannot decide it.
 
@@ -68,7 +68,7 @@ class ApprovalServer:
         self._httpd = ThreadingHTTPServer((host, port), handler)
         self._httpd.daemon_threads = True
         self._thread = threading.Thread(
-            target=self._httpd.serve_forever, daemon=True, name="interceptor-approval"
+            target=self._httpd.serve_forever, daemon=True, name="tesera-approval"
         )
         self._thread.start()
 
@@ -243,7 +243,7 @@ class ServerApprovalProvider:
     Times out fail-closed after *timeout_seconds*. Print ``server.url`` to the
     operator; the URL carries the auth token. Decisions are attributed to
     ``"web"`` (or the ``by`` form field) — wrap this provider in
-    :class:`interceptor.policy.AttestedApprovalProvider` when the journal must
+    :class:`tesera.policy.AttestedApprovalProvider` when the journal must
     say *who* approved.
     """
 

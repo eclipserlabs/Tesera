@@ -1,4 +1,4 @@
-"""Provider fetchers for :mod:`interceptor.reconcile`: external truth, injected.
+"""Provider fetchers for :mod:`tesera.reconcile`: external truth, injected.
 
 Each fetcher answers "what does the provider say about this receipt?" against
 a client *you* configure and pass in — this library takes no network
@@ -22,7 +22,7 @@ class StripeRefundFetcher:
     application dependency, never a library one::
 
         import stripe
-        from interceptor import StripeRefundFetcher, reconcile_journal
+        from tesera import StripeRefundFetcher, reconcile_journal
 
         report = reconcile_journal(journal, keys, StripeRefundFetcher(stripe))
 

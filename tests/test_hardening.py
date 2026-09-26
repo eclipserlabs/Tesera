@@ -5,18 +5,18 @@ from __future__ import annotations
 import pytest
 
 from helpers import allow
-from interceptor import guard
-from interceptor.archive import _rollback_archive, archive_journal
-from interceptor.errors import (
+from tesera import guard
+from tesera.archive import _rollback_archive, archive_journal
+from tesera.errors import (
     ArchiveError,
     ContractError,
     CountersignError,
     IdentityError,
     ResolutionError,
 )
-from interceptor.identity import load_trusted_public_keys, rotate_key
-from interceptor.journal import FileJournal
-from interceptor.shipping import FanoutJournalStore
+from tesera.identity import load_trusted_public_keys, rotate_key
+from tesera.journal import FileJournal
+from tesera.shipping import FanoutJournalStore
 
 
 def _act(journal, **kwargs):
@@ -74,7 +74,7 @@ def test_rollback_happens_when_path_clear(tmp_path):
 
 
 def test_resolve_rejects_dry_run(evidence_home):
-    from interceptor import resolve_journal
+    from tesera import resolve_journal
 
     journal = evidence_home / "journal.jsonl"
 
@@ -97,9 +97,9 @@ def test_resolve_rejects_dry_run(evidence_home):
 def test_raw_engine_never_with_provider_fails_closed(evidence_home, tmp_path):
     import inspect
 
-    from interceptor.contracts import build_contract
-    from interceptor.engine import execute_sync
-    from interceptor.policy import BudgetProvider
+    from tesera.contracts import build_contract
+    from tesera.engine import execute_sync
+    from tesera.policy import BudgetProvider
 
     def raw(x: int) -> int:
         return x
@@ -128,7 +128,7 @@ def test_rotate_rejects_non_key_successor(evidence_home):
 
 
 def test_witness_preserves_countersign_error(evidence_home, tmp_path):
-    from interceptor import witness_journal
+    from tesera import witness_journal
 
     journal = evidence_home / "journal.jsonl"
     _act(journal)(1)
@@ -139,7 +139,7 @@ def test_witness_preserves_countersign_error(evidence_home, tmp_path):
 
 
 def test_ship_error_signals(evidence_home, tmp_path):
-    from interceptor.errors import EventShipError
+    from tesera.errors import EventShipError
 
     journal = tmp_path / "j.jsonl"
 
@@ -183,13 +183,13 @@ def test_ship_error_signals(evidence_home, tmp_path):
     assert exc_info.value.function_outcome == "succeeded"
     assert exc_info.value.result == 6
     keys = load_trusted_public_keys(evidence_home)
-    from interceptor import verify_journal
+    from tesera import verify_journal
 
     assert verify_journal(journal, keys).valid
 
 
 def test_ship_error_is_caught_as_persistence_error(evidence_home, tmp_path):
-    from interceptor.errors import EventShipError, EvidencePersistenceError, JournalError
+    from tesera.errors import EventShipError, EvidencePersistenceError, JournalError
 
     err = EventShipError("witness down", executed=True, retry_safe=False)
     assert isinstance(err, JournalError)
@@ -203,7 +203,7 @@ def test_ship_error_is_caught_as_persistence_error(evidence_home, tmp_path):
 
 
 def test_resolve_note_marks_truncation(evidence_home, tmp_path):
-    from interceptor import resolve_journal
+    from tesera import resolve_journal
 
     journal = tmp_path / "j.jsonl"
 

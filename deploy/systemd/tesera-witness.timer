@@ -1,0 +1,13 @@
+[Unit]
+Description=tesera witness every 5 minutes (tail-truncation bound)
+Documentation=https://github.com/eclipserlabs/tesera/blob/main/docs/DEPLOYMENT.md
+
+[Timer]
+# Matches DEPLOYMENT.md cron: */5 * * * *
+OnCalendar=*:0/5
+Persistent=true
+RandomizedDelaySec=30
+Unit=tesera-witness.service
+
+[Install]
+WantedBy=timers.target

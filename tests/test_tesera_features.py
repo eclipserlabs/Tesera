@@ -8,13 +8,13 @@ from pathlib import Path
 
 import pytest
 
-import interceptor as ic
+import tesera as ic
 from helpers import allow, deny
-from interceptor import guard
-from interceptor.audit import InvocationStatus, audit_journal
-from interceptor.engine import reset_idempotency_state
-from interceptor.identity import load_trusted_public_keys
-from interceptor.policy import (
+from tesera import guard
+from tesera.audit import InvocationStatus, audit_journal
+from tesera.engine import reset_idempotency_state
+from tesera.identity import load_trusted_public_keys
+from tesera.policy import (
     AllowListProvider,
     AnyOf,
     BudgetProvider,
@@ -24,7 +24,7 @@ from interceptor.policy import (
     RateLimitProvider,
     TimeoutApprovalProvider,
 )
-from interceptor.redaction import compile_value_patterns
+from tesera.redaction import compile_value_patterns
 
 
 def events(home: Path) -> list[dict]:
@@ -389,7 +389,7 @@ def test_wrap_tools_without_configuration(evidence_home):
     def purge(cache: str) -> str:
         return f"purged {cache}"
 
-    from interceptor import wrap_tools
+    from tesera import wrap_tools
 
     wrapped = wrap_tools([refund, purge], approval_provider=allow())
     assert [f("c1") for f in wrapped] == ["refunded c1", "purged c1"]

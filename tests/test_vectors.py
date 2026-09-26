@@ -17,8 +17,8 @@ import pytest
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
-from interceptor import audit_journal
-from interceptor.verification import verify_journal
+from tesera import audit_journal
+from tesera.verification import verify_journal
 
 VECTORS_DIR = Path(__file__).resolve().parent.parent / "verifiers" / "vectors" / "v1"
 VECTORS = sorted(VECTORS_DIR.glob("*.json"))

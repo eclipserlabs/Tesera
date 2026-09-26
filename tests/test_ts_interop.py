@@ -15,9 +15,9 @@ from pathlib import Path
 
 import pytest
 
-from interceptor import audit_journal, inspect_journal
-from interceptor.identity import load_public_key
-from interceptor.verification import verify_journal
+from tesera import audit_journal, inspect_journal
+from tesera.identity import load_public_key
+from tesera.verification import verify_journal
 
 ROOT = Path(__file__).resolve().parent.parent
 NODE = shutil.which("node")

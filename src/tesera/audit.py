@@ -99,8 +99,8 @@ def _check_max_events(path: Path, max_events: int | None) -> None:
     if size > max_events:
         raise EvidenceAuditError(
             f"journal holds {size} events, over the --max-events limit of {max_events}; "
-            "audit per rotated file instead (`interceptor archive` keeps files small, "
-            "`interceptor verify-chain` covers custody across them)"
+            "audit per rotated file instead (`tesera archive` keeps files small, "
+            "`tesera verify-chain` covers custody across them)"
         )
 
 

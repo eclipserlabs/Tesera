@@ -9,7 +9,7 @@ synced by cron, WORM storage). Optionally it also counter-signs the checkpoint
 with an external key in the same run.
 
 Run it on a schedule (cron/systemd); verify with
-``interceptor verify --checkpoint <dir>/latest`` or ``verify-chain``.
+``tesera verify --checkpoint <dir>/latest`` or ``verify-chain``.
 """
 
 from __future__ import annotations

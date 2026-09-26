@@ -12,7 +12,7 @@ is stable, what may change, and how breaking changes ship.
 - **Verification semantics**: `verify`/`audit` exit codes and the
   `needs_reconciliation` fail-closed behavior do not change without a major
   version bump.
-- **Exception hierarchy**: every error derives from `InterceptorError`;
+- **Exception hierarchy**: every error derives from `TeseraError`;
   existing exception names and their catch semantics (`ActionDenied` covers
   `DuplicateActionError`) are stable.
 

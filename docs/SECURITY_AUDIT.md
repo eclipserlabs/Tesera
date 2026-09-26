@@ -84,3 +84,32 @@ one minimal fix. Human review of medium+ findings: none above low.
 * Deps: `cryptography` installed 50.0.1 (`>=42.0` floor in
   `pyproject.toml`); TS crypto is Node builtins (no third-party crypto
   dep). CVE status checked in phase 3.
+
+## Phase 3 — Supply chain and secrets — PASS 2026-09-26
+
+Tools: gitleaks 8.30.1 (full history, `--all`), pip-audit 2.10.1,
+pnpm audit, registry probes. One human decision taken mid-phase
+(allowlist for fixtures, approved in writing).
+
+### Findings
+
+| # | Severity | Location | Finding | Disposition |
+|---|---|---|---|---|
+| 1 | low (false positive ×4) | git history: `src/interceptor/identity.py@cf49a8f` (identifier `mEd25519PrivateKey`), `tests/test_redaction_homoglyphs.py@e9dea77` (`msk-live-HOMOGLYPH-TEST-…`), `tests/test_maturity.py@3bb6c2c` (`sk-live-abcdefgh…` inside a redaction test), `tests/test_redaction_property.py@29ed62f` (`msk-live-PROPERTY-TEST-SECRET-…`) | Gitleaks `generic-api-key` hits on synthetic fixtures that exist to exercise the redactor (plus one code identifier). Verified each in context; none is a credential. | Human-approved allowlist in `.gitleaks.toml` (exact regexes + paths). Re-scan: 345 commits, **no leaks found**. CI should run gitleaks with this config. |
+| 2 | medium (accepted) | `ts/`: vitest chain, GHSA-82fw-gwwq-j7x9 (esbuild dev-server), 2 moderate findings | Dev-dependency only (`vitest`); fix requires a vitest 3→4 major bump. The repo never runs a dev server (`vitest run` only). | Accepted risk with reasoning; Dependabot (phase 6) will surface it weekly. Below the high/critical bar. |
+
+### Confirmations (all pass)
+
+* Python deps (`pip-audit`, frozen venv pins incl. `cryptography`
+  50.0.1): **no known vulnerabilities**.
+* Typosquat: `tesera` free on PyPI and npm; neighbors (`tesara`,
+  `tesero`, `teserra`, `teser4`, `teserq`) all unclaimed. PyPI
+  `tessera` (double-s) is an unrelated Graphite dashboard (0.10.0) —
+  discoverability note, not a collision: different name, different
+  domain, long-established.
+* Lockfiles: `uv.lock` + `ts/pnpm-lock.yaml` committed with integrity
+  hashes; CI installs with `uv sync --frozen` /
+  `pnpm install --frozen-lockfile`.
+* Install scripts: no `preinstall`/`postinstall`/`install` in
+  `package.json` (only `prepack`, which copies two reviewed files at
+  pack time — not install time); no `setup.py`, no `cmdclass`.

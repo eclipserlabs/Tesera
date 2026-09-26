@@ -1,9 +1,13 @@
 {
-  "name": "interceptor-effect",
+  "name": "tesera",
   "version": "0.2.0",
   "type": "module",
-  "description": "Approval-gated, tamper-evident evidence for consequential function calls — Effect/TypeScript sibling of the Python interceptor.",
+  "description": "Approval-gated, tamper-evident evidence for consequential function calls — Effect/TypeScript sibling of the Python tesera package.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eclipserlabs/tesera"
+  },
   "exports": {
     ".": "./dist/index.js"
   },

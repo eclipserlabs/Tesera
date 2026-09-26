@@ -142,3 +142,36 @@ None. One accepted-by-design item below.
   fallback instead of masquerading as a release). Installed packages
   report the real version; the release workflows build before publish,
   so published artifacts always carry 0.2.0.
+
+## Phase 5 — Documentation and transparency — PASS 2026-09-26
+
+### SECURITY.md (rewritten)
+
+The prior file was accurate but pre-rename (`interceptor` ×3) and
+missing three required sections. Now contains: private reporting
+channel (advisory flow + email, no public issues), 48h acknowledgment,
+30-day critical-fix timeline with announcement fallback, post-fix
+advisory + reporter credit, no bounty promise, scope table (unchanged),
+key handling (unchanged), latest-release-only support, and the
+primitives note (audited libraries, correct usage is our job). Plain
+English, no legal language.
+
+### THREAT_MODEL.md accuracy review — pass
+
+No stale names (renamed in the publication pass). Every load-bearing
+claim sourced: decision-before-execution + fsync (engine + tests),
+contract/input-hash semantics, per-event signatures, chain linkage,
+tail-truncation gap with `test_truncated_tail_is_not_detectable`
+(`tests/test_evidence.py:89`) pinning it, checkpoint/countersign
+residuals, rotation bounds, approval-server phishing note, redaction
+limits, idempotency scope (`DuplicateActionError` blocks, never replays).
+No claim removed, none corrected — the model matches the code.
+
+### README review — pass
+
+* "What it is not": 5 bullets, each accurate, each starting with Not,
+  ending at `docs/THREAT_MODEL.md`. Verified: (a) no exactly-once claim
+  — crash-between-effect-and-outcome stated; (b) success ≠ external
+  action — stated; (c) no tail-detection claim — detection never claimed.
+* Pitch: "gates consequential function calls on approval and records
+  signed evidence of each call" — no overclaim (denials record too).

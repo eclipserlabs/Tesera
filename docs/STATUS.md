@@ -41,3 +41,24 @@
   TS-emitted journals verify in Python (`test_ts_interop` + vectors, 19
   passed on rebuilt dist).
 * Human next: commit 3 (READMEs), then commit 4 (publication prep).
+
+## Commit 3 — READMEs PASSED 2026-09-26
+
+* Rewrote: root `README.md`, `ts/README.md` (plain pitch, install,
+  copy-paste 30-second example, offline verify, unsoftened "not" section,
+  format-as-contract, honest status ≤5-bullet plan, MIT). No badges, no
+  compliance claims.
+* Proof of run: Python example + `tesera verify` executed in a FRESH venv
+  (`uv venv`, `uv pip install /repo` → 0.2.0 installed, example prints,
+  `OK 2 events`). TS example + node verifier executed against the built
+  package (prints result, `OK 2 events verified`). Cloud `make
+  submodule-init && make up && make migrate && make run` re-verified with
+  `healthz`/`readyz` 200 (plus a `make up` poll bugfix: HTTP 000 no longer
+  counts as "answered").
+* Findings for commit 4 (publication prep): (1) `ts/package.json`
+  `exports` points at `./dist/index.js` but tsc emits
+  `./dist/src/index.js` — must be fixed before publish or `import
+  "tesera"` fails; (2) TS README's verify command needs
+  `verifiers/node/verify.mjs` inside the published tarball — the `files`
+  allowlist must include it (or the command must change).
+* Human next: commit 4 (workflows, packaging, PUBLISHING.md). No publish yet.

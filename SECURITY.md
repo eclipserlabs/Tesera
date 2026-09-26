@@ -1,8 +1,13 @@
 # Security
 
-`interceptor` writes signed, hash-chained evidence for consequential
-calls. Its trust model matters more than its code does, so read
+`tesera` writes signed, hash-chained evidence for consequential calls.
+Its trust model matters more than its code does, so read
 [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md) before reporting or fixing.
+
+The cryptographic primitives come from well-audited libraries (Python
+`cryptography`, Node builtins). This library's job is to use them
+correctly: one traversal for redact-and-canonicalize, signatures over
+canonical bytes, verification that recomputes everything.
 
 ## Reporting a vulnerability
 
@@ -14,7 +19,7 @@ Report it privately instead:
 - If you have write access to the repository, use GitHub's private security
   advisory flow.
 - Otherwise, email the maintainers via the contact address listed on the
-  project page, and include "interceptor" in the subject line.
+  project page, and include "tesera" in the subject line.
 
 Please include:
 
@@ -25,8 +30,10 @@ Please include:
 - whether the issue is a forgery, an integrity break, a disclosure, or a
   denial of service.
 
-We will acknowledge within 48 hours, and prefer a coordinated fix and release
-before public disclosure.
+We acknowledge within 48 hours. Critical issues (forgery or disclosure
+without the key) get a fix release within 30 days; anything slower is
+announced. After the fix, we publish a security advisory and credit the
+reporter unless they ask otherwise. There is no bug bounty.
 
 ## What is and is not in scope
 
@@ -56,7 +63,7 @@ Explicitly out of scope, because the threat model states them as limits:
   it protects integrity across key changes, it does not authenticate a key.
   Pin the public key out-of-band (e.g. `--public-key`) for real authentication.
 - Never paste a private key or a journal into an issue.
-- A journal that failed `interceptor verify` is evidence of tampering or
+- A journal that failed `tesera verify` is evidence of tampering or
   corruption; do not discard it, keep it for analysis.
 
 ## Supported versions

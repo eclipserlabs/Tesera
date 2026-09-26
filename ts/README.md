@@ -1,8 +1,16 @@
 # Tesera (TypeScript)
 
+[![CI](https://github.com/eclipserlabs/tesera/actions/workflows/ci.yml/badge.svg)](https://github.com/eclipserlabs/tesera/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/github/license/eclipserlabs/tesera)](../LICENSE)
+[![Node 20+](https://img.shields.io/badge/node-20%2B-green)](https://nodejs.org/)
+
 Signed, hash-chained evidence for consequential function calls — the
 Effect/TypeScript sibling of the Python `tesera` package. Same evidence
 format v1, same guarantees, enforced where TypeScript agents run.
+
+- [Install](#install) · [30-second example](#30-second-example) ·
+  [Verify](#verify-evidence-offline) · [What it is not](#what-it-is-not) ·
+  [Evidence format](#evidence-format) · [Status](#status) · [License](#license)
 
 ## Install
 

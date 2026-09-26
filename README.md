@@ -1,7 +1,19 @@
 # Tesera
 
+[![CI](https://github.com/eclipserlabs/tesera/actions/workflows/ci.yml/badge.svg)](https://github.com/eclipserlabs/tesera/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/github/license/eclipserlabs/tesera)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
+[![Node 20+](https://img.shields.io/badge/node-20%2B-green)](https://nodejs.org/)
+
 Signed, hash-chained evidence for consequential Python function calls.
 Approval-gated. Locally verifiable. No network required.
+
+TypeScript sibling: [`tesera` on npm](ts/README.md) — same evidence
+format v1, same guarantees, for Effect/TypeScript agents.
+
+- [Install](#install) · [30-second example](#30-second-example) ·
+  [Verify](#verify-evidence-offline) · [What it is not](#what-it-is-not) ·
+  [Evidence format](#evidence-format) · [Status](#status) · [License](#license)
 
 ## Install
 
@@ -89,7 +101,7 @@ second-key countersignatures, key rotation, archive rotation, and a
 TypeScript sibling (`ts/`, package `tesera`) implementing the same format.
 
 Does not exist yet: a public hosted witness service. The
-`tessera-cloud` backend (ingestion, reconciliation, operator queue) is
+`tesera-cloud` backend (ingestion, reconciliation, operator queue) is
 private and not accepting external traffic.
 
 Planned (5 max): first PyPI release; first npm release; a hosted witness

@@ -7,6 +7,13 @@ pre-1.0 additive-only discipline until then).
 
 ## [Unreleased]
 
+### Repository owner
+
+The GitHub org was renamed from `eclipserlabs` to `sheringfords`.
+Old `github.com/eclipserlabs/tesera` URLs redirect to
+`github.com/sheringfords/tesera`. New links, badges, and Trusted
+Publishing targets should use `sheringfords/tesera`.
+
 ### First public release
 
 0.1.x was internal-only and never published to any index. 0.2.0 is the

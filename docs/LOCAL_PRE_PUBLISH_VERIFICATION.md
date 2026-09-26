@@ -112,3 +112,18 @@ agree.
 
 Timestamps are UTC. SHAs above are the tested baseline: the human's
 Step 8 rebuild must produce identical SHAs before real publish.
+
+## Addendum 2026-09-26 — consistency sweep (no src changes)
+
+Doc-only edits (`docs/PUBLISHING.md` redirect notes,
+`docs/PRE_PUBLISH_HUMAN_TASKS.md` redirect notes, `CHANGELOG.md`
+rename note) changed the sdist, which vendors `docs/` and
+`CHANGELOG.md`:
+
+- wheel: `f9f66576228b9c15b5629ac2b18dd2cded04a66df0a456b1098c1d4c1866ecd1`
+  (unchanged — no `src/` or `pyproject.toml` change).
+- sdist: `3ed0c9a46ec7684edb1787434edc3476a7b42e8151d436361021b85182584ebd`
+  (was `1bbbb5d5...`; diff is only the three edited doc files).
+
+`twine check` passes on the rebuilt artifacts. The Step 8 SHA
+comparison must use these post-sweep values.

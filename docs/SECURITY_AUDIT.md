@@ -113,3 +113,32 @@ pnpm audit, registry probes. One human decision taken mid-phase
 * Install scripts: no `preinstall`/`postinstall`/`install` in
   `package.json` (only `prepack`, which copies two reviewed files at
   pack time — not install time); no `setup.py`, no `cmdclass`.
+
+## Phase 4 — Build and provenance — PASS 2026-09-26
+
+### Findings
+
+None. One accepted-by-design item below.
+
+### Confirmations
+
+* Reproducibility: wheel + sdist built twice from a clean worktree
+  (`main@5347f91`), 60s+ apart — identical file lists and SHA-256 per
+  file (35 wheel files, 51 sdist files). REPRODUCIBLE.
+* Artifact contents: wheel has no tests/fixtures/env/git/pycache;
+  sdist additionally carries only docs + `.gitignore` (tracked build
+  input, benign — no secrets, no code). npm tarball: 32 files
+  (`dist/src` js+d.ts, `verifiers/verify.mjs`, README, LICENSE,
+  package.json); no tests/scripts/maps/raw-ts.
+* Provenance: `publish-python.yml` uses `pypa/gh-action-pypi-publish`
+  (attestations by default) with `id-token: write`; `publish-npm.yml`
+  runs `npm publish --provenance --access public` with `id-token:
+  write`. No long-lived tokens anywhere.
+* `files` allowlist verified via `pnpm pack` output (see above).
+* Versions: `pyproject.toml` 0.2.0, `ts/package.json` 0.2.0,
+  `CHANGELOG.md` 0.2.0 — consistent.
+* `0.0.0+unknown` in source checkouts: accepted by design (CHANGELOG
+  documents it: a checkout without installed metadata reports the
+  fallback instead of masquerading as a release). Installed packages
+  report the real version; the release workflows build before publish,
+  so published artifacts always carry 0.2.0.

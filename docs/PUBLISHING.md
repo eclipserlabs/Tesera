@@ -22,7 +22,10 @@
 - Confirm Trusted Publishing pending publisher at
   `pypi.org/manage/account/publishing/`: owner `sheringfords`,
   repository `tesera`, workflow `publish-python.yml`, environment
-  `pypi`.
+  `pypi`. If the GitHub UI suggests `eclipserlabs`, ignore the
+  suggestion — the canonical owner is `sheringfords` (the old name
+  redirects, but Trusted Publishing must point at the canonical
+  repo path).
 
 ## Step 1 — Build once
 
@@ -270,6 +273,8 @@ Published. Python <version>, TypeScript <version>.
    (PyPI: `pypi.org/manage/account/publishing/`; npm: package Settings
    → Trusted Publisher), pointing at repo `sheringfords/tesera` and the
    two workflow files — so the NEXT release publishes from a tag.
+   If the GitHub UI suggests `eclipserlabs`, ignore the suggestion —
+   the canonical owner is `sheringfords`.
 2. Do NOT push `py@*`/`ts@*` tags for this release: the release
    workflows trigger on tags and would fail against the just-published
    version. Tag-driven publishing starts with the next version bump.

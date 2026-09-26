@@ -192,3 +192,45 @@ Commit 4 (post-publish verification) waits on that report — stopping here.
   \<v\>, TypeScript \<v\>." Agent then runs post-publish
   verification. Agent cannot: TestPyPI/PyPI/npm authentication,
   Trusted Publishing clicks, token creation.
+
+## Phase 1 — org consistency sweep PASSED 2026-09-26
+
+Human confirmed canonical owner: `sheringfords/tesera`.
+
+* P1 grep: zero `eclipserlabs` outside `docs/STATUS.md` (historical
+  phase records) and `docs/SECURITY_AUDIT.md:221` (rename
+  documentation) — both explicitly describe the rename, so kept.
+  No file changed for P1; already clean since #26.
+* P2 URLs: all 7 `github.com` URLs in public docs already canonical
+  (`sheringfords/tesera`, CI workflow, CHANGELOG/DEPLOYMENT/
+  THREAT_MODEL blobs, issues). `curl -sIL` on each: 200, 0
+  redirects. Redirect behavior documented: old
+  `github.com/eclipserlabs/tesera` → 301 → canonical (1 redirect,
+  final 200). No file changed for P2.
+* P3 badges: CI badge SVG 200, shields license badge 200, both
+  canonical. No file changed for P3.
+* P4 Trusted Publishing: added the redirect note ("If the GitHub UI
+  suggests `eclipserlabs`, ignore the suggestion — the canonical
+  owner is `sheringfords`") to `docs/PUBLISHING.md` (prereqs +
+  After-publish) and `docs/PRE_PUBLISH_HUMAN_TASKS.md` (both TP
+  bullets, now with explicit owner fields). Files changed.
+* P5 systemd/docs: all 6 unit `Documentation=` URLs already
+  canonical since #26. No file changed for P5.
+* P6 rename note: added `### Repository owner` under `[Unreleased]`
+  in `CHANGELOG.md`. README note omitted deliberately: the package
+  is unpublished (no installed user base could hold the old URL),
+  old URLs redirect, and README space is for the pitch — reasoning
+  recorded here per the task.
+* P7 rebuild: wheel `f9f66576…` identical (no src/metadata change);
+  sdist `1bbbb5d5…` →
+  `3ed0c9a46ec7684edb1787434edc3476a7b42e8151d436361021b85182584ebd`,
+  explained (sdist vendors the three edited doc files).
+  `twine check` passes. Baseline addendum written to
+  `docs/LOCAL_PRE_PUBLISH_VERIFICATION.md`; Step 8 comparison must
+  use the post-sweep sdist value.
+* Untouched: workflows, `src/`, evidence format, crypto, history. No
+  dependencies.
+* Human next: confirm this PR merged → run
+  `docs/TEST_PUBLISH_SEQUENCE.md` → report Step 1 SHAs + per-step
+  pass/fail. Phase 2 gated on that report — agent waiting, nothing
+  fabricated.

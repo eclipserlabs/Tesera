@@ -27,10 +27,16 @@ publish.
 - [ ] Confirm the SECURITY.md address (personal, best-effort,
       single-engineer) is monitored, or set up a dedicated alias first.
 - [ ] Trusted Publishing on PyPI: `pypi.org/manage/account/publishing/`
-      → add pending publisher for repo `sheringfords/tesera`, workflow
-      `publish-python.yml`, environment `pypi`.
+      → add pending publisher for repo `sheringfords/tesera` (owner
+      `sheringfords`, repository `tesera`), workflow
+      `publish-python.yml`, environment `pypi`. If the GitHub UI
+      suggests `eclipserlabs`, ignore the suggestion — the canonical
+      owner is `sheringfords`.
 - [ ] Trusted Publishing on npm: package Settings → Trusted Publisher
-      for repo `sheringfords/tesera`, workflow `publish-npm.yml`.
+      for repo `sheringfords/tesera` (owner `sheringfords`),
+      workflow `publish-npm.yml`. If the GitHub UI suggests
+      `eclipserlabs`, ignore the suggestion — the canonical owner is
+      `sheringfords`.
 
 ## Test first, then publish
 

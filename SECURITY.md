@@ -35,6 +35,18 @@ without the key) get a fix release within 30 days; anything slower is
 announced. After the fix, we publish a security advisory and credit the
 reporter unless they ask otherwise. There is no bug bounty.
 
+## If a vulnerability is reported
+
+One maintainer triages: reproduce against the latest release, assess
+against `docs/THREAT_MODEL.md` (which assumption breaks?), and set
+severity. A fix ships as a patch release with a `CHANGELOG.md` entry
+and a GitHub security advisory; users are notified through the advisory
+and the release notes. Pin exact versions downstream and upgrade: a
+compromise of the signing path is total and retroactive, so there is no
+"safely ignore" for a real finding. Reports that restate documented
+limits (tail truncation without a witness, stolen keys, low-entropy
+hash recovery) are closed with a pointer to the threat model.
+
 ## What is and is not in scope
 
 In scope:

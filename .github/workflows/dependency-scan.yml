@@ -1,0 +1,66 @@
+name: Weekly dependency scan
+
+# Runs pip-audit and pnpm audit on a schedule. Opens one issue per run
+# when a high or critical CVE appears. Moderate findings are reported in
+# the issue body but do not fail the workflow — the audit appendix
+# (docs/SECURITY_AUDIT.md phase 3) explains the standing exceptions.
+on:
+  schedule:
+    - cron: "0 9 * * MON"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "20"
+      - name: Python audit
+        id: pip
+        run: |
+          uv sync --frozen
+          uv run --frozen --with pip-audit pip-audit --strict > pip-audit.txt 2>&1 || echo "pip_failed=true" >> "$GITHUB_OUTPUT"
+          cat pip-audit.txt
+      - name: TypeScript audit
+        id: npm
+        working-directory: ts
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm audit --audit-level=high > ../npm-audit.txt 2>&1 || echo "npm_failed=true" >> "$GITHUB_OUTPUT"
+          cat ../npm-audit.txt
+      - name: File issue on high/critical
+        if: steps.pip.outputs.pip_failed == 'true' || steps.npm.outputs.npm_failed == 'true'
+        run: |
+          {
+            echo "The weekly scan found a high or critical vulnerability. See the workflow run for details."
+            echo
+            echo "Python (pip-audit --strict):"
+            echo '```'
+            cat pip-audit.txt
+            echo '```'
+            echo
+            echo "TypeScript (pnpm audit --audit-level=high):"
+            echo '```'
+            cat npm-audit.txt
+            echo '```'
+          } | gh issue create --title "Weekly dependency scan: high/critical CVE found" --body-file -
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

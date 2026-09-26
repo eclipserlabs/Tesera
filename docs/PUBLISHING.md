@@ -7,39 +7,48 @@
 
 ## Python (PyPI, package `tesera`)
 
-1. Create a PyPI account at https://pypi.org/account/register/ and
-   enable 2FA (account settings → two-factor).
-2. On your machine: `uv build` (produces `dist/tesera-0.2.0-*.whl` and
-   `dist/tesera-0.2.0.tar.gz`).
-3. First upload (proves account control; creates the project):
-   `uvx twine upload dist/*` — paste an account-scoped token
-   (PyPI → API tokens → "entire account", username `__token__`).
-4. Configure Trusted Publishing (PyPI → your profile → Publishing):
-   add a pending publisher with owner `eclipserlabs`, repository
-   `tesera`, workflow `publish-python.yml`, environment `pypi`.
-5. Tag and push: `git tag py@0.2.0 && git push origin py@0.2.0`.
-   The workflow builds and publishes via OIDC. No token in CI.
-6. Confirm: `pip install tesera==0.2.0` in a fresh venv, run the README
-   example, record in `docs/PUBLICATION_VERIFIED.md`.
+1. Confirm MFA is enabled on the PyPI account (hardware key or TOTP,
+   not SMS). Create the account at
+   https://pypi.org/account/register/ first if needed.
+2. Confirm Trusted Publishing is configured at
+   `pypi.org/manage/account/publishing/`: pending publisher with owner
+   `sheringfords`, repository `tesera`, workflow `publish-python.yml`,
+   environment `pypi`.
+3. From a clean checkout: `uv build`.
+4. From the same checkout: `uvx twine check dist/*` (must pass).
+5. Run the first publish: `uvx twine upload dist/*` using an
+   account-scoped API token (not a project-scoped token, because the
+   project does not exist yet; username `__token__`).
+6. Confirm the package appears at `pypi.org/project/tesera/`.
+7. Report back the exact version number.
 
-## npm (package `tesera`)
+## TypeScript (npm, package `tesera`)
 
-1. Create an npm account at https://www.npmjs.com/signup and enable 2FA
-   (`npm profile enable-2fa` — auth-and-writes level).
-2. On your machine, in `ts/`: `pnpm install --frozen-lockfile &&
-   pnpm build && pnpm pack` (produces `tesera-0.2.0.tgz`).
-3. First publish (claims the name): `npm publish --access public`
-   from `ts/` (logged in as the owner; `--access public` is required —
-   the default for a new package would be restricted and fail).
-4. Configure Trusted Publishing (npm → package Settings → Trusted
-   Publisher): organization/user `eclipserlabs`, repository `tesera`,
-   workflow `publish-npm.yml`. Requires npm CLI 11.5.1+ for
-   `--provenance` (the workflow pins Node 20 + latest npm).
-5. Tag and push: `git tag ts@0.2.0 && git push origin ts@0.2.0`.
-   The workflow tests, builds, and publishes with `--provenance`
-   via OIDC. No token in CI.
-6. Confirm: `npm install tesera@0.2.0` in a fresh project, run the
-   README example, record in `docs/PUBLICATION_VERIFIED.md`.
+1. Confirm MFA is enabled on the npm account (hardware key or TOTP,
+   not SMS; `npm profile enable-2fa` — auth-and-writes level).
+2. Run `pnpm --dir ts build`.
+3. Run `pnpm --dir ts pack` and confirm the tarball contains only the
+   intended files (32 files: `dist/src` js+d.ts, `verifiers/verify.mjs`,
+   README, LICENSE, package.json).
+4. Run the first publish: `cd ts && npm publish --access public`
+   (the first publish is manual, not via Trusted Publishing, because
+   the package does not exist yet; `--access public` is required).
+5. Confirm the package appears at `npmjs.com/package/tesera`.
+6. Report back the exact version number.
+
+## After publish
+
+1. Configure Trusted Publishing for the package on both registries
+   (PyPI: `pypi.org/manage/account/publishing/`; npm: package Settings
+   → Trusted Publisher), pointing at repo `sheringfords/tesera` and the
+   two workflow files — so the NEXT release publishes from a tag.
+2. Do NOT push `py@*`/`ts@*` tags for this release: the release
+   workflows trigger on tags and would fail against the just-published
+   version. Tag-driven publishing starts with the next version bump.
+3. Report to the agent: "Published. Python \<version\>, TypeScript
+   \<version\>." The agent will then run post-publish verification
+   (fresh installs, README example, both verifiers, provenance) and
+   write `docs/PUBLICATION_VERIFIED.md`.
 
 ## If a name is taken
 

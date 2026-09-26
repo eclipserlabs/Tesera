@@ -89,3 +89,13 @@
 * Suites: 428 Python + 56 TS pass. Human next: commit 5 manual publish
   (`twine upload`, `npm publish --access public`, Trusted Publishing
   setup), then report versions back.
+
+## README polish — badges + cross-links PASSED 2026-09-26
+
+* Added: CI + MIT + Python 3.10+ + Node 20+ badges (root), CI + MIT +
+  Node 20+ (TS). All badges point at things that exist (workflow file,
+  LICENSE, documented versions). No PyPI/npm/coverage badges — nothing
+  to point at until publish.
+* Added: TS cross-link, table of contents with verified anchors, fixed
+  stale `tessera-cloud` reference.
+* Code blocks untouched (still the executed ones from commit 3).

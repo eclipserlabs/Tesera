@@ -1,6 +1,6 @@
 [Unit]
 Description=tesera: verify journal covers latest witness + audit for reconciliation
-Documentation=https://github.com/eclipserlabs/tesera/blob/main/docs/DEPLOYMENT.md
+Documentation=https://github.com/sheringfords/tesera/blob/main/docs/DEPLOYMENT.md
 
 [Service]
 Type=oneshot

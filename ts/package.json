@@ -6,7 +6,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/eclipserlabs/tesera"
+    "url": "https://github.com/sheringfords/tesera"
+  },
+  "homepage": "https://github.com/sheringfords/tesera",
+  "bugs": {
+    "url": "https://github.com/sheringfords/tesera/issues"
   },
   "publishConfig": {
     "access": "public"

@@ -1,7 +1,7 @@
 # Tesera (TypeScript)
 
-[![CI](https://github.com/eclipserlabs/tesera/actions/workflows/ci.yml/badge.svg)](https://github.com/eclipserlabs/tesera/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/github/license/eclipserlabs/tesera)](../LICENSE)
+[![CI](https://github.com/sheringfords/tesera/actions/workflows/ci.yml/badge.svg)](https://github.com/sheringfords/tesera/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/github/license/sheringfords/tesera)](../LICENSE)
 [![Node 20+](https://img.shields.io/badge/node-20%2B-green)](https://nodejs.org/)
 
 Signed, hash-chained evidence for consequential function calls — the

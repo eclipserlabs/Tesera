@@ -32,6 +32,11 @@ fails, the release waits. No exceptions for cryptographic code.
 
 - [ ] Tag pushed; the publish workflow ran green.
 - [ ] PyPI/npm show the new version with signed provenance/attestations.
+- [ ] After publish, run `gh attestation verify <artifact>` (npm) and the
+      PyPI provenance check, and record the result in
+      `docs/PUBLICATION_VERIFIED.md`.
+- [ ] Verify the provenance attestation points at the exact commit that
+      was tagged (compare attestation subject digest to the tag SHA).
 - [ ] Fresh-environment install verified (`pip install tesera==<v>`,
       `npm install tesera@<v>`) and recorded in
       `docs/PUBLICATION_VERIFIED.md`.

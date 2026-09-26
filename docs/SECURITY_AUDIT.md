@@ -191,3 +191,32 @@ No claim removed, none corrected — the model matches the code.
 * `SECURITY.md`: incident-response section added (triage against the
   threat model, patch release + advisory + credit, upgrade guidance,
   documented limits closed with a pointer).
+
+## Closeout (pre-publication, 2026-09-26) — all items resolved or tasked
+
+* **C1 zizmor online: PASS.** Full run with API token: 0 findings
+  (pinned SHAs resolve, no malicious actions). Recorded here.
+* **C2 pip-audit pinned: done.** `dependency-scan.yml` now uses
+  `--with pip-audit==2.10.1` (version verified locally).
+* **C3 Security Advisories: human task.** API exposes no confirmed
+  status; enabling is admin-only. Recorded in
+  `docs/PRE_PUBLISH_HUMAN_TASKS.md` with the exact setting path
+  (Settings → Security → Private vulnerability reporting). Secret
+  scanning is disabled — same page, same task.
+* **C4 SECURITY.md email: done.** `wiramahendra@proton.me` stated
+  explicitly with a best-effort single-engineer note. Kept personal:
+  no team or domain exists to host an alias; flagged in human tasks
+  for reconsideration before publish.
+* **C5 provenance steps: done.** RELEASE_CHECKLIST now requires
+  attestation verification recorded in PUBLICATION_VERIFIED.md and an
+  attestation-subject-vs-tag-SHA match.
+* **C6 disambiguation: done.** One plain sentence after the pitch
+  (`tesera` vs Graphite's `tessera`); no box, no callout.
+* **C7 version note: done.** CHANGELOG top explains 0.1.x
+  internal-only, 0.2.0 first public. Also fixed the stale
+  "`interceptor`" in the changelog header line.
+* **C8 private links: PASS.** No public doc links to a private repo
+  (only a prose mention of the private cloud in NAMING_DECISION.md, no
+  link). Remaining links verified: repo home + CI badge redirect
+  `eclipserlabs/tesera` → `sheringfords/tesera` (HTTP 200 after
+  redirect; canonicalization queued as hygiene, not security).

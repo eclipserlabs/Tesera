@@ -1,6 +1,6 @@
 [Unit]
 Description=tesera verify + witness-audit + audit every 15 minutes
-Documentation=https://github.com/eclipserlabs/tesera/blob/main/docs/DEPLOYMENT.md
+Documentation=https://github.com/sheringfords/tesera/blob/main/docs/DEPLOYMENT.md
 
 [Timer]
 # Matches DEPLOYMENT.md: witness-audit */15, verify hourly at minimum.

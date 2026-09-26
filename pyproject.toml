@@ -28,10 +28,10 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/eclipserlabs/tesera"
-Changelog = "https://github.com/eclipserlabs/tesera/blob/main/CHANGELOG.md"
-Documentation = "https://github.com/eclipserlabs/tesera"
-"Threat Model" = "https://github.com/eclipserlabs/tesera/blob/main/docs/THREAT_MODEL.md"
+Homepage = "https://github.com/sheringfords/tesera"
+Changelog = "https://github.com/sheringfords/tesera/blob/main/CHANGELOG.md"
+Documentation = "https://github.com/sheringfords/tesera"
+"Threat Model" = "https://github.com/sheringfords/tesera/blob/main/docs/THREAT_MODEL.md"
 
 [project.scripts]
 tesera = "tesera.cli:main"
